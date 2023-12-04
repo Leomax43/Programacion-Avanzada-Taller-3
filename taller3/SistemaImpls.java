@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -24,12 +25,13 @@ public class SistemaImpls implements Sistema{
 		JFrame frame = new JFrame("Ingresar Datos");
         frame.setSize(300, 200);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        frame.setLocationRelativeTo(null);
         JPanel panel = new JPanel();
         frame.add(panel);
         placeComponents(panel);
-
         frame.setVisible(true);
+        
+       
 	}
 	private static void placeComponents(JPanel panel) {
     	panel.setLayout(null);
@@ -53,22 +55,29 @@ public class SistemaImpls implements Sistema{
         JButton submitButton = new JButton("Submit");
         submitButton.setBounds(100, 80, 80, 25);
         panel.add(submitButton);
-
+        
+        
+        
+        
         // Acción al presionar el botón
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String rut = rutText.getText();
-                String password = new String(passwordText.getPassword());
+                char[] passwordChars = passwordText.getPassword();
+                String password = new String(passwordChars);
 
                 // Aquí puedes usar los valores almacenados (rut y password) como desees
                 System.out.println("RUT ingresado: " + rut);
                 System.out.println("Contraseña ingresada: " + password);
 
+                // Ejemplo de mensaje de bienvenida utilizando el RUT del usuario
+                String mensajeBienvenida = "¡Bienvenido, usuario con RUT: " + rut + "!";
+                JOptionPane.showMessageDialog(null, mensajeBienvenida);
+
                 // Por ejemplo, podrías llamar a una función para verificar la contraseña o guardar el RUT y la contraseña en algún lugar.
             }
         });
-    
     }
 	
 	
