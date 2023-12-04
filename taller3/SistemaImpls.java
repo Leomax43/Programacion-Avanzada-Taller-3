@@ -14,11 +14,10 @@ public class SistemaImpls implements Sistema{
 
 	@Override
 	public void leerArch() {
-		JFrame frame = new JFrame("Ingresar Datos");
-        frame.setSize(300, 200);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+		
 	}
+
+	
 
 	@Override
 	public void Interfaz() {
