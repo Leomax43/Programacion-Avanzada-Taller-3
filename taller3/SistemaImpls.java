@@ -2,7 +2,8 @@ package taller3;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.util.*;
+import java.io.*;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -12,9 +13,24 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 public class SistemaImpls implements Sistema{
-
+	private ArrayList<Texto> listaTextos=new ArrayList<>();
+	
+	
+	
+	
 	@Override
-	public void leerArch() {
+	public void leerArch() throws FileNotFoundException {
+		Scanner sc = new Scanner(new File("textos.txt"));
+		while (sc.hasNextLine()) {
+			String linea = sc.nextLine();
+			System.out.println(linea);
+			
+			
+			
+		}
+		
+		
+		
 		
 	}
 
