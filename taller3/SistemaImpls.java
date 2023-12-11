@@ -44,11 +44,21 @@ public   class SistemaImpls implements Sistema{
 			
 			//aca podemos usar un metodo de los raros esos
 			//para no tener q hacer 20 mil if
+
+			//Pero para que exactamente se necesita hacer un metodo aca? No entiendo, me eche progra
 			String tipoLibro = partesTexto[4];
 			//System.out.println(tipoLibro);
 			//aca se agregan dependiendo del tipo a las diferentes clases
 			//aca se agregan a la listaTextos
-			
+			if(partesTexto[4].equals("Libro")) {
+				listaTextos.add(new Libro(Integer.parseInt(partesTexto[0]), Integer.parseInt(partesTexto[1]), partesTexto[2], partesTexto[3], partesTexto[5], partesTexto[6], partesTexto[7]));
+			}else if(partesTexto[4].equals("Comic")) {
+				listaTextos.add(new Comic(Integer.parseInt(partesTexto[0]), Integer.parseInt(partesTexto[1]), partesTexto[2], partesTexto[3], partesTexto[5], partesTexto[6], partesTexto[7]));
+			}else if(partesTexto[4].equals("Apunte")) {
+				listaTextos.add(new Apunte(Integer.parseInt(partesTexto[0]), Integer.parseInt(partesTexto[1]), partesTexto[2], partesTexto[3], partesTexto[5], partesTexto[6]));
+			}else if(partesTexto[4].equals("Paper")) {
+				listaTextos.add(new Paper(Integer.parseInt(partesTexto[0]), Integer.parseInt(partesTexto[1]), partesTexto[2], partesTexto[3], partesTexto[5], partesTexto[6]));
+			}
 			
 			
 			//ya estaria cargado todos los textos ahora faltan los demas
