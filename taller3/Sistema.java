@@ -9,4 +9,8 @@ public interface Sistema {
 	void menuTrabajador();
 	void menuCliente();
 	
+	
+	
+	
+	
 }

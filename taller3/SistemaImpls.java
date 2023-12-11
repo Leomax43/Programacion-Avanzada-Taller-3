@@ -14,12 +14,23 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-public class SistemaImpls implements Sistema{
+public   class SistemaImpls implements Sistema{
+	private static SistemaImpls instance;
+	
 	private ArrayList<Texto> listaTextos=new ArrayList<>();
 	private static ArrayList<Persona> listaPersonas=new ArrayList<>();
 	private ArrayList<Reserva> listaReservas=new ArrayList<>();
 	private ArrayList<Devolucion> listaDevoluciones=new ArrayList<>();
 
+	private SistemaImpls() {}
+	
+	public static SistemaImpls getInstancia(){
+		if (instance==null) {
+			instance = new SistemaImpls();
+		}
+		return instance;
+	}
+	
 	
 	
 	
@@ -56,13 +67,13 @@ public class SistemaImpls implements Sistema{
 			switch (tipoPersona) {
 				case ("Usuario"):
 					//System.out.println("oal");
-					Usuario u = new Usuario(partesPersona[0],partesPersona[1],partesPersona[2]);
+					Usuario u = new Usuario(partesPersona[0],partesPersona[1],partesPersona[2],tipoPersona);
 					listaPersonas.add(u);
 				
 				
 				case("Trabajador"):
 					//System.out.println("aol");
-					Trabajador t = new Trabajador(partesPersona[0],partesPersona[1],partesPersona[2]);
+					Trabajador t = new Trabajador(partesPersona[0],partesPersona[1],partesPersona[2],tipoPersona);
 					listaPersonas.add(t);
 					
 			}
@@ -184,6 +195,38 @@ public class SistemaImpls implements Sistema{
                 	//comandos para los clientes y/o trabajadores
                 	//menuCliente();
                 	//menuTrabajador();
+                	String a = getTipoPersona(rut);
+                	System.out.println(a);
+                	if (a.equals("Usuario")) {
+                		System.out.println("usuraior");
+                		
+                		/*
+                		 * 
+                		 * 
+                		 * 
+                		 * 
+                		 * nosesise hace asi
+                		 */
+                		Sistema s = SistemaImpls.getInstancia();
+						s.menuCliente();
+                		
+                	}
+                	else if(a.equals("Trabajador")){
+                		System.out.println("oal");
+                		
+                		/*
+                		 * 
+                		 * advertencia
+                		 * AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+                		 */
+                		Sistema s = SistemaImpls.getInstancia();
+                		s.menuTrabajador();
+                		
+                	}
+                	else {
+                		System.out.println("esto no deberia pasar");
+
+                	}
                 	
                 }
                 
@@ -214,6 +257,16 @@ public class SistemaImpls implements Sistema{
                 
             }
 
+			private String getTipoPersona(String rut) {
+				for (Persona p : listaPersonas) {
+					if (p.getRut().equals(rut)) {
+						return p.getTipoPersona();
+					}
+				}
+				return null;
+				
+			}
+
 			private void agregarBotonSiNo(JPanel panelRegistro) {
             	JLabel mensajeRegistro = new JLabel("¡Bienvenido, Usuario no Registrado. Desea Registrarse?");
             	mensajeRegistro.setBounds(10, 20, 800, 25);
@@ -239,7 +292,13 @@ public class SistemaImpls implements Sistema{
 						
 						//esto no se si deberia ir asi
 						//ayuda
-						Sistema s = new SistemaImpls();
+						/*
+						 * 
+						 * 
+						 * 
+						 * aAHHHHHHHHHHHHHHHH
+						 */
+						Sistema s = SistemaImpls.getInstancia();
 						s.registroCliente();
 						
 				        
@@ -371,16 +430,16 @@ public class SistemaImpls implements Sistema{
 
 	@Override
 	public void menuTrabajador() {
-		// TODO Auto-generated method stub
-		
+		System.out.println("yo trabajo");
 	}
 
 
 
 	@Override
 	public void menuCliente() {
-		// TODO Auto-generated method stub
-		
+		System.out.println("yono trabajo");
+		System.out.println("yo notrabajo");
+
 	}
 	
 	

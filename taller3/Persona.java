@@ -1,13 +1,22 @@
 package taller3;
 
 public class Persona {
-	private String nombre,rut,pass;
+	private String nombre,rut,pass,tipoPersona;
 
-	public Persona(String nombre, String rut, String pass) {
+	public Persona(String nombre, String rut, String pass,String tipoPersona) {
 		super();
 		this.nombre = nombre;
 		this.rut = rut;
 		this.pass = pass;
+		this.tipoPersona=tipoPersona;
+	}
+
+	public String getTipoPersona() {
+		return tipoPersona;
+	}
+
+	public void setTipoPersona(String tipoPersona) {
+		this.tipoPersona = tipoPersona;
 	}
 
 	public String getNombre() {
