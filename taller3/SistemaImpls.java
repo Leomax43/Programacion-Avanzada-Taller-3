@@ -1,5 +1,6 @@
 package taller3;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
@@ -11,6 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 public class SistemaImpls implements Sistema{
 	private ArrayList<Texto> listaTextos=new ArrayList<>();
@@ -108,7 +110,7 @@ public class SistemaImpls implements Sistema{
 	@Override
 	public void Interfaz() {
 		JFrame frame = new JFrame("Ingresar Datos");
-        frame.setSize(300, 200);
+        frame.setSize(500, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         JPanel panel = new JPanel();
@@ -121,37 +123,48 @@ public class SistemaImpls implements Sistema{
 	private static void placeComponents(JPanel panel) {
     	panel.setLayout(null);
 
-        JLabel rutLabel = new JLabel("RUT:");
-        rutLabel.setBounds(10, 20, 80, 25);
+        JLabel rutLabel = new JLabel("RUT(12345678-9): ");
+        rutLabel.setBounds(10, 20, 800, 25);
         panel.add(rutLabel);
 
         JTextField rutText = new JTextField(20);
-        rutText.setBounds(100, 20, 165, 25);
+        rutText.setBounds(200, 20, 165, 25);
         panel.add(rutText);
-
+        
         JLabel passwordLabel = new JLabel("Contraseña:");
         passwordLabel.setBounds(10, 50, 80, 25);
         panel.add(passwordLabel);
 
         JPasswordField passwordText = new JPasswordField(20);
-        passwordText.setBounds(100, 50, 165, 25);
+        passwordText.setBounds(200, 50, 165, 25);
         panel.add(passwordText);
+        
+        JLabel fechaLabel = new JLabel("Ingrese la fecha(AAAA/MM/DD):");
+        fechaLabel.setBounds(10, 80, 800, 25);
+        panel.add(fechaLabel);
 
-        JButton submitButton = new JButton("Submit");
-        submitButton.setBounds(100, 80, 80, 25);
-        panel.add(submitButton);
+        JTextField fechaActual = new JTextField(20);
+        fechaActual.setBounds(200, 80, 165, 25);
+        panel.add(fechaActual);
+        
+        JButton button = new JButton("Submit");
+        button.setBounds(200, 120, 80, 25);
+        panel.add(button);
         
         
         
         
         // Acción al presionar el botón
-        submitButton.addActionListener(new ActionListener() {
+        button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String rut = rutText.getText();
                 char[] passwordChars = passwordText.getPassword();
                 String password = new String(passwordChars);
+                String fecha = fechaActual.getText();
 
+                
+                
                 // Aquí puedes usar los valores almacenados (rut y password) como desees
                 boolean revisarDatosCorrectos =false;
                 
@@ -160,20 +173,187 @@ public class SistemaImpls implements Sistema{
                 		revisarDatosCorrectos=true;
                 	}
 				}
-                
-                if(revisarDatosCorrectos) {
+                System.out.println(fecha);
+                if(revisarDatosCorrectos && fecha!=null) {
+                	
                 	System.out.println("RUT ingresado: " + rut);
                 	System.out.println("Contraseña ingresada: " + password);
-                	
-                	// Ejemplo de mensaje de bienvenida utilizando el RUT del usuario
                 	String mensajeBienvenida = "¡Bienvenido, usuario con RUT: " + rut + "!";
                 	JOptionPane.showMessageDialog(null, mensajeBienvenida);
+                	//aca se prosigue con lo q se deba hacer
+                	//comandos para los clientes y/o trabajadores
+                	//menuCliente();
+                	//menuTrabajador();
                 	
-                	// Por ejemplo, podrías llamar a una función para verificar la contraseña o guardar el RUT y la contraseña en algún lugar.
+                }
+                
+                //solo se revisa la fecha ya que los demas datos se revisan en la lectura de la lista
+                else if (revisarDatosCorrectos==false && fecha!= null) {
+                	JFrame frameRegistro = new JFrame("Ingresar Datos");
+                    frameRegistro.setSize(350, 200);
+                    frameRegistro.setLocationRelativeTo(null);
+                	JPanel panelRegistro = new JPanel();
+                    frameRegistro.add(panelRegistro);
+					SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+                	agregarBotonSiNo(panelRegistro);
+                    frameRegistro.setVisible(true);
+
+                	
                 	
                 }
                 else {
-            		String mensajeError = "Ingrese sus datos correctamente";
+            		String mensajeError = "Ingrese sus datos correctamente / Ingrese todos los datos";
+            		JOptionPane.showMessageDialog(null, mensajeError);
+            	}
+                
+                
+                
+                
+                
+                
+                
+            }
+
+			private void agregarBotonSiNo(JPanel panelRegistro) {
+            	JLabel mensajeRegistro = new JLabel("¡Bienvenido, Usuario no Registrado. Desea Registrarse?");
+            	mensajeRegistro.setBounds(10, 20, 800, 25);
+                panelRegistro.add(mensajeRegistro);
+                
+		    	panelRegistro.setLayout(null);
+
+				JButton buttonSi = new JButton("Si");
+		        buttonSi.setBounds(80, 120, 80, 25);
+		        panelRegistro.add(buttonSi);
+		        
+		        JButton buttonNo = new JButton("No");
+		        buttonNo.setBounds(180, 120, 80, 25);
+		        panelRegistro.add(buttonNo);
+		        
+		        
+		        buttonSi.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						//este codigo cierra la ventana
+						SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+						
+						//esto no se si deberia ir asi
+						//ayuda
+						Sistema s = new SistemaImpls();
+						s.registroCliente();
+						
+				        
+					}
+		        }); 
+		        buttonNo.addActionListener(new ActionListener() {
+		        	
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						String mensajeError = "Se terminara el programa";
+	            		JOptionPane.showMessageDialog(null, mensajeError);
+						SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+
+					}
+					
+		       });
+		        
+			}
+        });
+    }
+
+
+
+	@Override
+	public void registroCliente() {
+		System.out.println("wenasns");
+		
+		JFrame frameRegistroCliente = new JFrame("Registro Cliente... Ingresar Datos");
+		frameRegistroCliente.setSize(500, 500);
+		frameRegistroCliente.setLocationRelativeTo(null);
+        JPanel panelRegistroCliente = new JPanel();
+        frameRegistroCliente.add(panelRegistroCliente);
+        placeComponentsRegistro(panelRegistroCliente);
+        frameRegistroCliente.setVisible(true);
+		
+		
+		
+		
+		
+		
+	}
+
+
+
+	private void placeComponentsRegistro(JPanel panelRegistroCliente) {
+		panelRegistroCliente.setLayout(null);
+
+        JLabel rutLabel = new JLabel("RUT(12345678-9): ");
+        rutLabel.setBounds(10, 20, 800, 25);
+        panelRegistroCliente.add(rutLabel);
+
+        JTextField rutText = new JTextField(20);
+        rutText.setBounds(200, 20, 165, 25);
+        panelRegistroCliente.add(rutText);
+        
+        JLabel passwordLabel = new JLabel("Contraseña:");
+        passwordLabel.setBounds(10, 50, 80, 25);
+        panelRegistroCliente.add(passwordLabel);
+
+        JPasswordField passwordText = new JPasswordField(20);
+        passwordText.setBounds(200, 50, 165, 25);
+        panelRegistroCliente.add(passwordText);
+        
+        JLabel fechaLabel = new JLabel("Ingrese la fecha(AAAA/MM/DD):");
+        fechaLabel.setBounds(10, 80, 800, 25);
+        panelRegistroCliente.add(fechaLabel);
+
+        JTextField fechaActual = new JTextField(20);
+        fechaActual.setBounds(200, 80, 165, 25);
+        panelRegistroCliente.add(fechaActual);
+        
+        JButton button = new JButton("Submit");
+        button.setBounds(200, 120, 80, 25);
+        panelRegistroCliente.add(button);
+        
+        
+        
+        
+        // Acción al presionar el botón
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String rut = rutText.getText();
+                char[] passwordChars = passwordText.getPassword();
+                String password = new String(passwordChars);
+                String fecha = fechaActual.getText();
+
+                
+                
+                // Aquí puedes usar los valores almacenados (rut y password) como desees
+                boolean revisarDatosCorrectos =false;
+                
+                for (Persona p : listaPersonas) {
+                	if (p.getRut().equals(rut) && p.getPass().equals(password)) {
+                		revisarDatosCorrectos=true;
+                	}
+				}
+                System.out.println(fecha);
+                if(revisarDatosCorrectos && fecha==null) {
+                	// Ejemplo de mensaje de bienvenida utilizando el RUT del usuario
+                	String mensajeError = "¡Error, usuario Ya existe: ";
+                	JOptionPane.showMessageDialog(null, mensajeError);
+                }
+                else if (revisarDatosCorrectos==false && fecha!= null&& rut!= null&& password!= null) {
+                	/*
+                	 * Este es el importante
+                	 * Se almacenan los datos aqui
+                	 * en alguna lista o algo asi
+                	 * 
+                	 * 
+                	 */
+                }
+                else {
+            		String mensajeError = "Ingrese sus datos correctamente / Ingrese todos los datos";
             		JOptionPane.showMessageDialog(null, mensajeError);
             	}
                 
@@ -185,7 +365,23 @@ public class SistemaImpls implements Sistema{
                 
             }
         });
-    }
+	}
+
+
+
+	@Override
+	public void menuTrabajador() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void menuCliente() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 	
