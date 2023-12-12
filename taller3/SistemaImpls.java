@@ -51,13 +51,13 @@ public   class SistemaImpls implements Sistema{
 			//aca se agregan dependiendo del tipo a las diferentes clases
 			//aca se agregan a la listaTextos
 			if(partesTexto[4].equals("Libro")) {
-				listaTextos.add(new Libro(Integer.parseInt(partesTexto[0]), Integer.parseInt(partesTexto[1]), partesTexto[2], partesTexto[3], partesTexto[5], partesTexto[6], partesTexto[7]));
+				listaTextos.add(new Libro(Integer.parseInt(partesTexto[0]), Integer.parseInt(partesTexto[1]), partesTexto[2], partesTexto[3], partesTexto[4], partesTexto[5], partesTexto[6], partesTexto[7]));
 			}else if(partesTexto[4].equals("Comic")) {
-				listaTextos.add(new Comic(Integer.parseInt(partesTexto[0]), Integer.parseInt(partesTexto[1]), partesTexto[2], partesTexto[3], partesTexto[5], partesTexto[6], partesTexto[7]));
+				listaTextos.add(new Comic(Integer.parseInt(partesTexto[0]), Integer.parseInt(partesTexto[1]), partesTexto[2], partesTexto[3], partesTexto[4], partesTexto[5], partesTexto[6], partesTexto[7]));
 			}else if(partesTexto[4].equals("Apunte")) {
-				listaTextos.add(new Apunte(Integer.parseInt(partesTexto[0]), Integer.parseInt(partesTexto[1]), partesTexto[2], partesTexto[3], partesTexto[5], partesTexto[6]));
+				listaTextos.add(new Apunte(Integer.parseInt(partesTexto[0]), Integer.parseInt(partesTexto[1]), partesTexto[2], partesTexto[3], partesTexto[4], partesTexto[5], partesTexto[6]));
 			}else if(partesTexto[4].equals("Paper")) {
-				listaTextos.add(new Paper(Integer.parseInt(partesTexto[0]), Integer.parseInt(partesTexto[1]), partesTexto[2], partesTexto[3], partesTexto[5], partesTexto[6]));
+				listaTextos.add(new Paper(Integer.parseInt(partesTexto[0]), Integer.parseInt(partesTexto[1]), partesTexto[2], partesTexto[3], partesTexto[4], partesTexto[5], partesTexto[6]));
 			}
 			
 			
@@ -105,6 +105,7 @@ public   class SistemaImpls implements Sistema{
 			//lo mismo q recien
 			//se agrega
 			//se agrega a la listareservas
+			listaReservas.add(new Reserva(Integer.parseInt(partesReserva[0]), partesReserva[1], Integer.parseInt(partesReserva[2]), partesReserva[3], partesReserva[4]));
 			//Resrvas listas ahora lo demas
 			
 		}
@@ -119,6 +120,7 @@ public   class SistemaImpls implements Sistema{
 			//lo mismo q recien
 			//se agrega
 			//se agrega a la listaDevoluciones
+			listaDevoluciones.add(new Devolucion(Integer.parseInt(partesDevolucion[0]), Integer.parseInt(partesDevolucion[1]), partesDevolucion[2], partesDevolucion[3], partesDevolucion[4]));
 			//Devoluciones  listas ahora lo demas
 			
 		}
