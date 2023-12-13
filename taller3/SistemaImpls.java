@@ -134,6 +134,7 @@ public   class SistemaImpls implements Sistema{
         
         JPanel panelMenu = new JPanel();
         JLabel menuLabel = new JLabel("Menu Principal");
+        
         menuLabel.setBounds(100, 20, 800, 25);
         panelMenu.add(menuLabel);
         frame.add(menuLabel);
@@ -250,10 +251,11 @@ public   class SistemaImpls implements Sistema{
 				}
                 System.out.println(fecha);
                 if(revisarDatosCorrectos && !fecha.isBlank()) {
-                	
+					SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
                 	System.out.println("RUT ingresado: " + rut);
                 	System.out.println("Contraseña ingresada: " + password);
-                	String mensajeBienvenida = "¡Bienvenido, usuario con RUT: " + rut + "!";
+                	String nombre = buscarNombreConRut(rut);
+                	String mensajeBienvenida = "¡Bienvenido Usuario: "+nombre+ " con RUT: " + rut + "!";
                 	JOptionPane.showMessageDialog(null, mensajeBienvenida);
                 	//aca se prosigue con lo q se deba hacer
                 	//comandos para los clientes y/o trabajadores
@@ -271,7 +273,7 @@ public   class SistemaImpls implements Sistema{
                 		 * nosesise hace asi
                 		 */
                 		Sistema s = SistemaImpls.getInstancia();
-						s.menuCliente();
+						s.menuCliente(rut,fecha);
                 		
                 	}
                 	else if(a.equals("Trabajador")){
@@ -319,6 +321,15 @@ public   class SistemaImpls implements Sistema{
                 
                 
             }
+
+			private String buscarNombreConRut(String rut) {
+				for (Persona p : listaPersonas) {
+                	if (p.getRut().equals(rut)) {
+                		return p.getNombre();
+                	}
+				}				
+				return null;
+			}
 
 			private String getTipoPersona(String rut) {
 				for (Persona p : listaPersonas) {
@@ -507,11 +518,84 @@ public   class SistemaImpls implements Sistema{
 
 
 
-	@Override
-	public void menuCliente() {
-		System.out.println("yono trabajo");
-		System.out.println("yo notrabajo");
+	
 
+	@Override
+	public void menuCliente(String rut, String fecha) {
+		JFrame frame = new JFrame("Menu Ingreso");
+        frame.setSize(400, 300);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
+        frame.add(panel);
+        placeComponentsCliente(panel);
+        frame.setVisible(true);
+	}
+
+	private void placeComponentsCliente(JPanel panel) {
+		JButton buttonReservar = new JButton("Reservar Texto");
+		buttonReservar.setBounds(10, 10, 80, 25);
+        panel.add(buttonReservar);
+        
+        JButton buttonDevolver = new JButton("Devolver Texto");
+        buttonDevolver.setBounds(100, 10, 80, 25);
+        panel.add(buttonDevolver);
+        
+        JButton buttonVer = new JButton("Ver Reservas");
+        buttonVer.setBounds(10, 40, 80, 25);
+        panel.add(buttonVer);
+        
+        JButton buttonPagar = new JButton("Pagar Multas");
+        buttonPagar.setBounds(100, 40, 80, 25);
+        panel.add(buttonPagar);
+        
+        
+        buttonReservar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+				//se revisa si se puede reservar)?
+				//hay cantidad limite de libros?
+				//o hay como un solo libro por biblioteca
+				//nose
+				//se reserva
+				String mensaje= "Reservacionado";
+        		JOptionPane.showMessageDialog(null, mensaje);
+            }
+        });
+        
+        
+        buttonDevolver.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+				//se revisa si se puede devolver
+				//se devuelve
+				//o tal vez no
+				String mensaje= "Devolucionado";
+        		JOptionPane.showMessageDialog(null, mensaje);
+            }
+        });
+        
+        
+        buttonVer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+				//imprime la lista de libros que posee la persona
+				String mensaje= "Vericionado";
+        		JOptionPane.showMessageDialog(null, mensaje);
+            }
+        });
+        
+        
+        buttonPagar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+				//le cobras un riñon
+				//pero antes le muestras cuanto debe y porque
+				String mensaje= "Riñonizado";
+        		JOptionPane.showMessageDialog(null, mensaje);
+            }
+        });
+        
 	}
 
 	

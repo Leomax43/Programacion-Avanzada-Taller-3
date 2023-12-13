@@ -8,7 +8,9 @@ public interface Sistema {
 	void Interfaz();
 	void registroCliente();
 	void menuTrabajador();
-	void menuCliente();
+	
+	//se puede hacer esto???
+	void menuCliente(String rut, String fecha);
 	
 	
 	
