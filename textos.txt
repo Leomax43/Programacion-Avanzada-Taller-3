@@ -1,4 +1,19 @@
 1851,235338,Herman Melville,"Moby Dick",Libro,Penguin Classics,Aventura,Primera edición
-1988,010101,Alan Moore,"La Broma Asesina",Comic,DC Comics,Novela Gráfica,Edición Especial
-2022,989898,Juan Pérez,"Apuntes Calculo 1",Apuntes,Matemáticas,Ingenieria Civil Industrial
+1988,123456,Alan Moore,"La Broma Asesina",Comic,DC Comics,Novela Gráfica,Edición Especial
+2022,789012,Juan Pérez,"Apuntes Calculo 1",Apuntes,Matemáticas,Ingenieria Civil Industrial
 2023,223015,John Researcher,"Avances en Inteligencia Artificial",Paper,Inteligencia Artificial,DOI123456789
+1999,456789,J.K. Rowling,"Harry Potter and the Sorcerer's Stone",Libro,Scholastic,Fantasía,Edición Deluxe
+2005,678912,Stan Lee,"Spider-Man",Comic,Marvel,Acción,Número 1
+2010,789123,Michael Crichton,"Jurassic Park",Libro,HarperCollins,Ciencia Ficción,Edición de Coleccionista
+2015,891234,Art Spiegelman,"Maus",Comic,Pantheon Books,Biografía,Número 2
+2020,912345,Emily Brontë,"Cumbres Borrascosas",Libro,Penguin Classics,Romance,Edición Anotada
+2023,345678,Scott McCloud,"Understanding Comics",Libro,William Morrow,Psicología,Edición Revisada
+2008,567890,Chris Claremont,"X-Men",Comic,Marvel,Aventura,Número 25
+2019,678901,George Orwell,"1984",Libro,Signet Classics,Ciencia Ficción,Edición de Lujo
+2018,779012,Neil Gaiman,"Sandman",Comic,DC Comics,Fantasía Oscura,Volumen 1
+2017,890123,Margaret Atwood,"The Handmaid's Tale",Libro,Anchor Books,Drama,Edición de Bolsillo
+2016,901234,Marjane Satrapi,"Persepolis",Comic,Pantheon Books,Autobiografía,Volumen 1
+2021,012345,H.G. Wells,"La Guerra de los Mundos",Libro,Penguin Classics,Ciencia Ficción,Edición Ilustrada
+2014,623356,Mark Millar,"Kick-Ass",Comic,Icon Comics,Acción,Número 3
+2003,234567,Douglas Adams,"The Hitchhiker's Guide to the Galaxy",Libro,Del Rey Books,Humor,Edición de Viaje
+2000,543210,Grant Morrison,"Batman: Arkham Asylum",Comic,DC Comics,Suspenso,Número 1

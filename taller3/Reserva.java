@@ -10,5 +10,35 @@ public class Reserva {
 		this.fechaPedido = fechaPedido;
 		this.fechaDevolucion = fechaDevolucion;
 	}
+	public int getCodigoReserva() {
+		return codigoReserva;
+	}
+	public void setCodigoReserva(int codigoReserva) {
+		this.codigoReserva = codigoReserva;
+	}
+	public int getCodigoObjeto() {
+		return codigoObjeto;
+	}
+	public void setCodigoObjeto(int codigoObjeto) {
+		this.codigoObjeto = codigoObjeto;
+	}
+	public String getRut() {
+		return rut;
+	}
+	public void setRut(String rut) {
+		this.rut = rut;
+	}
+	public String getFechaPedido() {
+		return fechaPedido;
+	}
+	public void setFechaPedido(String fechaPedido) {
+		this.fechaPedido = fechaPedido;
+	}
+	public String getFechaDevolucion() {
+		return fechaDevolucion;
+	}
+	public void setFechaDevolucion(String fechaDevolucion) {
+		this.fechaDevolucion = fechaDevolucion;
+	}
 	
 }

@@ -103,6 +103,18 @@ public   class SistemaImpls implements Sistema{
 			listaReservas.add(new Reserva(Integer.parseInt(partesReserva[0]), partesReserva[1], Integer.parseInt(partesReserva[2]), partesReserva[3], partesReserva[4]));
 			//Resrvas listas ahora lo demas
 			
+			//ademas hay q agregarlo a la lista de reservas de cada persona
+			for (Persona p : listaPersonas) {
+			    if (p instanceof Usuario && p.getRut().equals(partesReserva[1]) && p.getTipoPersona().equals("Usuario")) {
+					//podriamos agregar solo el codigo del libro?
+					//o el libro entero nose
+					for (Texto t: listaTextos) {
+						if (Integer.parseInt(partesReserva[2])==t.getCodigo()) {
+							((Usuario) p).agregarLibro(t);
+						}
+					}
+				}
+			}
 		}
 		scReservas.close();
 		
@@ -252,8 +264,6 @@ public   class SistemaImpls implements Sistema{
                 System.out.println(fecha);
                 if(revisarDatosCorrectos && !fecha.isBlank()) {
 					SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
-                	System.out.println("RUT ingresado: " + rut);
-                	System.out.println("Contraseña ingresada: " + password);
                 	String nombre = buscarNombreConRut(rut);
                 	String mensajeBienvenida = "¡Bienvenido Usuario: "+nombre+ " con RUT: " + rut + "!";
                 	JOptionPane.showMessageDialog(null, mensajeBienvenida);
@@ -262,7 +272,6 @@ public   class SistemaImpls implements Sistema{
                 	//menuCliente();
                 	//menuTrabajador();
                 	String a = getTipoPersona(rut);
-                	System.out.println(a);
                 	if (a.equals("Usuario")) {
                 		
                 		/*
@@ -528,11 +537,11 @@ public   class SistemaImpls implements Sistema{
         frame.setLocationRelativeTo(null);
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
         frame.add(panel);
-        placeComponentsCliente(panel);
+        placeComponentsCliente(panel,rut);
         frame.setVisible(true);
 	}
 
-	private void placeComponentsCliente(JPanel panel) {
+	private void placeComponentsCliente(JPanel panel, String rut) {
 		JButton buttonReservar = new JButton("Reservar Texto");
 		buttonReservar.setBounds(10, 10, 80, 25);
         panel.add(buttonReservar);
@@ -553,14 +562,146 @@ public   class SistemaImpls implements Sistema{
         buttonReservar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-				//se revisa si se puede reservar)?
-				//hay cantidad limite de libros?
-				//o hay como un solo libro por biblioteca
-				//nose
-				//se reserva
-				String mensaje= "Reservacionado";
-        		JOptionPane.showMessageDialog(null, mensaje);
+            	boolean revisar = revisarSiUsuarioPuedeReservar(rut);
+            	
+            	if (revisar) {
+            	mostrarLibrosDisponibles();
+            	//voa tratar de imprimir todos los libros disponibles
+            	//se revisa si se puede reservar)?
+            	//hay cantidad limite de libros?
+            	//o hay como un solo libro por biblioteca
+            	//nose
+            	//se reserva
+            	JFrame frame = new JFrame("Menu Ingreso");
+            	frame.setSize(400, 300);
+            	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            	frame.setLocationRelativeTo(null);
+            	JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
+            	frame.add(panel);
+            	placeComponentsReserva(panel);
+            	frame.setVisible(true);
+            	
+            	
+            	}
+            	else {
+            		//imprimir en la interfaz 
+            		//usted no puede pedir mas libros
+            	}
+            	
+            	
+                
             }
+
+			private boolean revisarSiUsuarioPuedeReservar(String rut) {
+				for (Persona p : listaPersonas) {
+					if(p.getRut().equals(rut)) {
+						ArrayList<Texto> t = ((Usuario) p).getListaLibrosReservados();
+						int cont=0;
+						for (Texto texto : t) {
+							System.out.println(t);
+							cont++;
+						}
+						if(cont<=2) {
+							return true;
+						}
+					}
+					
+				}
+				return false;
+			}
+
+			private void placeComponentsReserva(JPanel panel) {
+				panel.setLayout(null);
+		    	
+		    	JLabel mensajeLabel = new JLabel("Ingresar Codigo del Texto que quiera Reservar");
+		        mensajeLabel.setBounds(70, 20, 800, 25);
+		        panel.add(mensajeLabel);
+		    	
+		    	
+		        JLabel CodigoLabel = new JLabel("Codigo: ");
+		        CodigoLabel.setBounds(100, 50, 80, 25);
+		        panel.add(CodigoLabel);
+
+		        JTextField CodigoText = new JTextField(20);
+		        CodigoText.setBounds(200, 50, 165, 25);
+		        panel.add(CodigoText);
+		        
+		        JButton button = new JButton("Submit");
+		        button.setBounds(150, 140, 80, 25);
+		        panel.add(button);
+		        
+		        
+		        
+		        
+		        // Acción al presionar el botón
+		        button.addActionListener(new ActionListener() {
+		            @Override
+		            public void actionPerformed(ActionEvent e) {
+		                String codigoElegido = CodigoText.getText();
+	            		JOptionPane.showMessageDialog(null, codigoElegido);
+		            }
+		        });
+		        
+		        
+			}
+
+			private void mostrarLibrosDisponibles() {
+				ArrayList<Texto> listaLibrosDisponibles = new ArrayList<>();
+				
+				//cont para revisar si alguna vez fue pedido el libro
+				int contPeticion=0;
+				
+				
+				for (Texto texto : listaTextos) {
+					for (Reserva r: listaReservas) {
+						
+						//se revisa si el libro fue alguna vez reservado
+						if (texto.getCodigo()==r.getCodigoObjeto()) {
+							//si entra aca es pq fue reservado
+							//ahora hay q revisar si lo devolvieron
+							contPeticion++;
+							for (Devolucion d: listaDevoluciones) {
+								if (d.getCodigoReserva()==r.getCodigoReserva()) {
+									//se pidio el libro y se devolvio
+									listaLibrosDisponibles.add(texto);
+								}
+								
+							}
+							
+						}
+					}
+					if(contPeticion==0) {
+						//si entra aca es pq nunca lo reservaron antes
+						listaLibrosDisponibles.add(texto);
+					}
+					contPeticion=0;
+				}
+				
+				
+				// Crear una nueva ventana (JFrame)
+		        JFrame frame = new JFrame("Lista De textos Disponibles");
+		        frame.setSize(800, 300);
+		        frame.setLocationRelativeTo(null);
+
+		        // Crear un JTextArea para mostrar la lista
+		        JTextArea textArea = new JTextArea();
+		        textArea.setEditable(false); // Hacer el área de texto no editable
+
+		        // Agregar los elementos del ArrayList al JTextArea
+		        
+		        for (Texto elemento : listaLibrosDisponibles) {
+		            textArea.append(elemento + "\n"); // Agregar cada elemento seguido de un salto de línea
+		        }
+		        
+		        // Agregar el JTextArea a un JScrollPane para permitir el desplazamiento si hay muchos elementos
+		        JScrollPane scrollPane = new JScrollPane(textArea);
+
+		        // Agregar el JScrollPane al JFrame
+		        frame.add(scrollPane, BorderLayout.CENTER);
+
+		        // Mostrar la ventana
+		        frame.setVisible(true);				
+			}
         });
         
         
