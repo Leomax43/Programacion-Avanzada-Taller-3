@@ -1,18 +1,10 @@
 package taller3;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
 import java.io.*;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 public   class SistemaImpls implements Sistema{
 	private static SistemaImpls instance;
@@ -46,6 +38,9 @@ public   class SistemaImpls implements Sistema{
 			//para no tener q hacer 20 mil if
 
 			//Pero para que exactamente se necesita hacer un metodo aca? No entiendo, me eche progra
+			//XDDDDDDDDDD nose 
+			//me referia a algo q los separara en libro/comic/apunte/paper pero asi como lo hiciste queo re piola
+			//yo lo iba a hacer como en 30 lineas
 			String tipoLibro = partesTexto[4];
 			//System.out.println(tipoLibro);
 			//aca se agregan dependiendo del tipo a las diferentes clases
@@ -128,8 +123,58 @@ public   class SistemaImpls implements Sistema{
 		
 	}
 
-	
+		
+	@Override
+	public void ingresarRegistrarse() {
+		JFrame frame = new JFrame("Menu Principal");
+		
+        frame.setSize(300, 300);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        
+        JPanel panelMenu = new JPanel();
+        JLabel menuLabel = new JLabel("Menu Principal");
+        menuLabel.setBounds(100, 20, 800, 25);
+        panelMenu.add(menuLabel);
+        frame.add(menuLabel);
+        
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 100)); // Crear un panel con FlowLayout centrado
+        frame.add(panel);
 
+        JButton buttonIngresar = new JButton("Ingresar");
+        panel.add(buttonIngresar);
+
+        JButton buttonRegistrarse = new JButton("Registrarse");
+        panel.add(buttonRegistrarse);
+        
+        
+        
+        buttonIngresar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+				SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+
+        		Sistema s = SistemaImpls.getInstancia();
+        		s.Interfaz();
+            }
+        });
+        
+        buttonRegistrarse.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+				SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+
+        		Sistema s = SistemaImpls.getInstancia();
+        		s.registroCliente();
+            }
+        });
+        
+        frame.setVisible(true);
+        
+	}
+	
+	
+	
 	@Override
 	public void Interfaz() {
 		JFrame frame = new JFrame("Ingresar Datos");
@@ -140,6 +185,8 @@ public   class SistemaImpls implements Sistema{
         frame.add(panel);
         placeComponents(panel);
         frame.setVisible(true);
+        
+        
         
        
 	}
@@ -210,7 +257,6 @@ public   class SistemaImpls implements Sistema{
                 	String a = getTipoPersona(rut);
                 	System.out.println(a);
                 	if (a.equals("Usuario")) {
-                		System.out.println("usuraior");
                 		
                 		/*
                 		 * 
@@ -224,7 +270,6 @@ public   class SistemaImpls implements Sistema{
                 		
                 	}
                 	else if(a.equals("Trabajador")){
-                		System.out.println("oal");
                 		
                 		/*
                 		 * 
@@ -344,6 +389,7 @@ public   class SistemaImpls implements Sistema{
         JPanel panelRegistroCliente = new JPanel();
         frameRegistroCliente.add(panelRegistroCliente);
         placeComponentsRegistro(panelRegistroCliente);
+        frameRegistroCliente.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frameRegistroCliente.setVisible(true);
 		
 		
@@ -357,33 +403,33 @@ public   class SistemaImpls implements Sistema{
 
 	private void placeComponentsRegistro(JPanel panelRegistroCliente) {
 		panelRegistroCliente.setLayout(null);
-
+		
+		JLabel nombreLabel = new JLabel("nombre: ");
+        nombreLabel.setBounds(10, 20, 800, 25);
+        panelRegistroCliente.add(nombreLabel);
+		
+        JTextField nombreText = new JTextField(20);
+        nombreText.setBounds(200, 20, 165, 25);
+        panelRegistroCliente.add(nombreText);
+        
         JLabel rutLabel = new JLabel("RUT(12345678-9): ");
-        rutLabel.setBounds(10, 20, 800, 25);
+        rutLabel.setBounds(10, 50, 800, 25);
         panelRegistroCliente.add(rutLabel);
-
+        
         JTextField rutText = new JTextField(20);
-        rutText.setBounds(200, 20, 165, 25);
+        rutText.setBounds(200, 50, 165, 25);
         panelRegistroCliente.add(rutText);
         
         JLabel passwordLabel = new JLabel("Contraseña:");
-        passwordLabel.setBounds(10, 50, 80, 25);
+        passwordLabel.setBounds(10, 80, 80, 25);
         panelRegistroCliente.add(passwordLabel);
 
         JPasswordField passwordText = new JPasswordField(20);
-        passwordText.setBounds(200, 50, 165, 25);
+        passwordText.setBounds(200, 80, 165, 25);
         panelRegistroCliente.add(passwordText);
         
-        JLabel fechaLabel = new JLabel("Ingrese la fecha(AAAA/MM/DD):");
-        fechaLabel.setBounds(10, 80, 800, 25);
-        panelRegistroCliente.add(fechaLabel);
-
-        JTextField fechaActual = new JTextField(20);
-        fechaActual.setBounds(200, 80, 165, 25);
-        panelRegistroCliente.add(fechaActual);
-        
         JButton button = new JButton("Submit");
-        button.setBounds(200, 120, 80, 25);
+        button.setBounds(200, 110, 80, 25);
         panelRegistroCliente.add(button);
         
         
@@ -396,9 +442,7 @@ public   class SistemaImpls implements Sistema{
                 String rut = rutText.getText();
                 char[] passwordChars = passwordText.getPassword();
                 String password = new String(passwordChars);
-                String fecha = fechaActual.getText();
-
-                
+                String nombre = nombreText.getText();
                 
                 // Aquí puedes usar los valores almacenados (rut y password) como desees
                 boolean revisarDatosCorrectos =false;
@@ -408,13 +452,12 @@ public   class SistemaImpls implements Sistema{
                 		revisarDatosCorrectos=true;
                 	}
 				}
-                System.out.println(fecha);
-                if(revisarDatosCorrectos && fecha==null) {
+                if(revisarDatosCorrectos && nombre==null) {
                 	// Ejemplo de mensaje de bienvenida utilizando el RUT del usuario
                 	String mensajeError = "¡Error, usuario Ya existe: ";
                 	JOptionPane.showMessageDialog(null, mensajeError);
                 }
-                else if (revisarDatosCorrectos==false && fecha!= null&& rut!= null&& password!= null) {
+                else if (revisarDatosCorrectos==false && nombre!= null&& rut!= null&& password!= null) {
                 	/*
                 	 * Este es el importante
                 	 * Se almacenan los datos aqui
@@ -422,6 +465,15 @@ public   class SistemaImpls implements Sistema{
                 	 * 
                 	 * 
                 	 */
+                	Persona p = new Usuario(nombre,rut,password,"Usuario");
+                	listaPersonas.add(p);
+					SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+					String mensaje = "Usuario Correctamente agregado";
+            		JOptionPane.showMessageDialog(null, mensaje);
+                	
+                	Sistema s = SistemaImpls.getInstancia();
+            		s.Interfaz();
+            		
                 }
                 else {
             		String mensajeError = "Ingrese sus datos correctamente / Ingrese todos los datos";
@@ -453,6 +505,8 @@ public   class SistemaImpls implements Sistema{
 		System.out.println("yo notrabajo");
 
 	}
+
+	
 	
 	
 	
