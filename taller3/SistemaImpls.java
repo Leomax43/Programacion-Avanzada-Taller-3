@@ -565,7 +565,7 @@ public   class SistemaImpls implements Sistema{
             	boolean revisar = revisarSiUsuarioPuedeReservar(rut);
             	
             	if (revisar) {
-            	mostrarLibrosDisponibles();
+            	ArrayList<Texto> listaLibrosDisponibles = mostrarLibrosDisponibles();
             	//voa tratar de imprimir todos los libros disponibles
             	//se revisa si se puede reservar)?
             	//hay cantidad limite de libros?
@@ -578,7 +578,7 @@ public   class SistemaImpls implements Sistema{
             	frame.setLocationRelativeTo(null);
             	JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
             	frame.add(panel);
-            	placeComponentsReserva(panel,fecha);
+            	placeComponentsReserva(panel,fecha,listaLibrosDisponibles,rut);
             	frame.setVisible(true);
             	
             	
@@ -610,7 +610,7 @@ public   class SistemaImpls implements Sistema{
 				return false;
 			}
 
-			private void placeComponentsReserva(JPanel panel, String fecha) {
+			private void placeComponentsReserva(JPanel panel, String fecha, ArrayList<Texto> listaLibrosDisponibles, String rut) {
 				panel.setLayout(null);
 		    	
 		    	JLabel mensajeLabel = new JLabel("Ingresar Codigo del Texto que quiera Reservar");
@@ -714,15 +714,47 @@ public   class SistemaImpls implements Sistema{
 		                	System.out.println(codigoReserva);
 		                	System.out.println(fechaEntrega);
 		                	System.out.println(fechaPedido+" fechapedido");
+		                	if (revisarDatosReserva(codigoReserva,fechaPedido,fechaEntrega,listaLibrosDisponibles)) {
+		                		reservarTexto(rut,codigoReserva,fechaPedido,fechaEntrega,listaLibrosDisponibles);
+		                		
+								for (Persona p : listaPersonas) {
+									if (p instanceof Usuario && p.getRut().equals(rut) && p.getTipoPersona().equals("Usuario")) {
+										ArrayList<Texto> minilista =((Usuario) p).getListaLibrosReservados();
+										for (Texto texto : minilista) {
+											System.out.println(texto);
+										}
+									}
+								}
+
+		                		//se modifica el txt
+		                		
+		                	}
 		                }
 		                else {
 		                	String fechaPedido = fechaPedidoText.getText();
 		                	System.out.println(codigoReserva);
 		                	System.out.println(fechaEntrega);
 		                	System.out.println(fechaPedido+" fechapedido");
+		                	if (revisarDatosReserva(codigoReserva,fechaPedido,fechaEntrega,listaLibrosDisponibles)) {
+		                		reservarTexto(rut,codigoReserva,fechaPedido,fechaEntrega,listaLibrosDisponibles);
+		                		
+		                		for (Persona p : listaPersonas) {
+									if (p instanceof Usuario && p.getRut().equals(rut) && p.getTipoPersona().equals("Usuario")) {
+										ArrayList<Texto> minilista =((Usuario) p).getListaLibrosReservados();
+										for (Texto texto : minilista) {
+											System.out.println(texto);
+										}
+									}
+								}
+		                		
+		                		
+		                		
+		                		
+		                		//se modifica el txt
+		                	}
 		                }
 		            	
-
+		                
 		                
 		                
 		                
@@ -730,13 +762,72 @@ public   class SistemaImpls implements Sistema{
 		                String codigoElegido = CodigoText.getText();
 	            		JOptionPane.showMessageDialog(null, codigoElegido);
 		            	*/
+		                
+		                
+		                SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+						String mensaje = "Libro Correctamente Reservado";
+	            		JOptionPane.showMessageDialog(null, mensaje);
+	            		//Sistema s = SistemaImpls.getInstancia();
+						//s.menuCliente(rut,fecha);
+		                
+		                
 		            }
+
+					
+
+					private void reservarTexto(String rut, String codigoReserva, String fechaPedido,
+							String fechaEntrega, ArrayList<Texto> listaLibrosDisponibles) {
+						for (Persona p : listaPersonas) {
+							if (p instanceof Usuario && p.getRut().equals(rut) && p.getTipoPersona().equals("Usuario")) {
+								for (Texto texto : listaLibrosDisponibles) {
+									if (texto.getCodigo()==Integer.parseInt(codigoReserva)) {
+										((Usuario) p).agregarLibro(texto);
+									}
+								}
+							}
+						}
+					}
+
+
+
+					private boolean revisarDatosReserva(String codigoReserva, String fechaPedido, String fechaEntrega, ArrayList<Texto> listaLibrosDisponibles) {
+						for (Texto t : listaLibrosDisponibles) {
+							if (t.getCodigo()==Integer.parseInt(codigoReserva) && !fechaPedido.isBlank() && !fechaEntrega.isBlank()) {
+								
+								String[] partesFechaPedido = fechaPedido.split("/");
+					            String[] partesFechaEntrega = fechaEntrega.split("/");
+
+					            int anioPedido = Integer.parseInt(partesFechaPedido[0]);
+					            int mesPedido = Integer.parseInt(partesFechaPedido[1]);
+					            int diaPedido = Integer.parseInt(partesFechaPedido[2]);
+
+					            int anioEntrega = Integer.parseInt(partesFechaEntrega[0]);
+					            int mesEntrega = Integer.parseInt(partesFechaEntrega[1]);
+					            int diaEntrega = Integer.parseInt(partesFechaEntrega[2]);
+
+					            // Comparación de fechas
+					            if (anioPedido < anioEntrega || 
+					                (anioPedido == anioEntrega && mesPedido < mesEntrega) || 
+					                (anioPedido == anioEntrega && mesPedido == mesEntrega && diaPedido <= diaEntrega)) {
+					                return true; // O realiza alguna acción si se cumple la condición
+					            } else {
+					            	System.out.println("Ingresaste mal los datos");
+					                return false; // O realiza alguna acción si no se cumple la condición
+					            }
+					        }
+					    }
+					    return false;
+								
+								
+							
+						
+					}
 		        });
 		        
 		        
 			}
 
-			private void mostrarLibrosDisponibles() {
+			private ArrayList<Texto> mostrarLibrosDisponibles() {
 				ArrayList<Texto> listaLibrosDisponibles = new ArrayList<>();
 				
 				//cont para revisar si alguna vez fue pedido el libro
@@ -791,7 +882,8 @@ public   class SistemaImpls implements Sistema{
 		        frame.add(scrollPane, BorderLayout.CENTER);
 
 		        // Mostrar la ventana
-		        frame.setVisible(true);				
+		        frame.setVisible(true);
+		        return listaLibrosDisponibles;
 			}
         });
         
