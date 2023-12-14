@@ -537,11 +537,11 @@ public   class SistemaImpls implements Sistema{
         frame.setLocationRelativeTo(null);
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
         frame.add(panel);
-        placeComponentsCliente(panel,rut);
+        placeComponentsCliente(panel,rut,fecha);
         frame.setVisible(true);
 	}
 
-	private void placeComponentsCliente(JPanel panel, String rut) {
+	private void placeComponentsCliente(JPanel panel, String rut, String fecha) {
 		JButton buttonReservar = new JButton("Reservar Texto");
 		buttonReservar.setBounds(10, 10, 80, 25);
         panel.add(buttonReservar);
@@ -578,7 +578,7 @@ public   class SistemaImpls implements Sistema{
             	frame.setLocationRelativeTo(null);
             	JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
             	frame.add(panel);
-            	placeComponentsReserva(panel);
+            	placeComponentsReserva(panel,fecha);
             	frame.setVisible(true);
             	
             	
@@ -610,7 +610,7 @@ public   class SistemaImpls implements Sistema{
 				return false;
 			}
 
-			private void placeComponentsReserva(JPanel panel) {
+			private void placeComponentsReserva(JPanel panel, String fecha) {
 				panel.setLayout(null);
 		    	
 		    	JLabel mensajeLabel = new JLabel("Ingresar Codigo del Texto que quiera Reservar");
@@ -626,8 +626,77 @@ public   class SistemaImpls implements Sistema{
 		        CodigoText.setBounds(200, 50, 165, 25);
 		        panel.add(CodigoText);
 		        
+		        
+		        JLabel fechaPedidoLabel = new JLabel("Fecha de Retiro: ");
+		        fechaPedidoLabel.setBounds(70, 80, 808, 25);
+		        panel.add(fechaPedidoLabel);
+
+		        JTextField fechaPedidoText = new JTextField(20);
+		        fechaPedidoText.setBounds(200, 80, 165, 25);
+		        panel.add(fechaPedidoText);
+		        
+		        
+		        JLabel fechaEntregaLabel = new JLabel("Fecha de Entrega: ");
+		        fechaEntregaLabel.setBounds(70, 110, 808, 25);
+		        panel.add(fechaEntregaLabel);
+
+		        JTextField fechaEntregaText = new JTextField(20);
+		        fechaEntregaText.setBounds(200, 110, 165, 25);
+		        panel.add(fechaEntregaText);
+		        
+		        JCheckBox useFechaActualCheckBox = new JCheckBox("Usar Fecha Actual");
+		        useFechaActualCheckBox.setBounds(60, 140, 140, 25);
+		        panel.add(useFechaActualCheckBox);
+
+		        useFechaActualCheckBox.addActionListener(new ActionListener() {
+		            public void actionPerformed(ActionEvent e) {
+		                if (useFechaActualCheckBox.isSelected()) {
+		                	Component[] components = panel.getComponents();
+		                    for (Component component : components) {
+		                        if (component instanceof JLabel) {
+		                            String text = ((JLabel) component).getText();
+		                            if (text.startsWith("Fecha de Retiro: ")) {
+		                                panel.remove(component);
+		                            }
+		                        }
+		                    }
+		                    fechaPedidoText.setVisible(false);
+		                    panel.revalidate();
+		                	
+		                	
+		                	
+		                	JLabel fechaHoyLabel = new JLabel("Fecha de hoy:              "+fecha);
+		    		        fechaHoyLabel.setBounds(80, 80, 800, 25);
+		    		        panel.add(fechaHoyLabel);
+		    		        panel.repaint();
+
+		                }
+		                else {
+		                    // Si el JLabel fue agregado anteriormente, se debe quitar antes de volver a pintar el panel
+		                    Component[] components = panel.getComponents();
+		                    for (Component component : components) {
+		                        if (component instanceof JLabel) {
+		                            String text = ((JLabel) component).getText();
+		                            if (text.startsWith("Fecha de hoy:")) {
+		                                panel.remove(component);
+		                            }
+		                        }
+		                    }
+		                    JLabel fechaPedidoLabel = new JLabel("Fecha de Retiro: ");
+		    		        fechaPedidoLabel.setBounds(70, 80, 808, 25);
+		    		        panel.add(fechaPedidoLabel);
+		    		        fechaPedidoText.setVisible(true);
+		                    
+		                    
+		                    
+		                    panel.revalidate();
+		                    panel.repaint();
+		                }
+		            }
+		        });
+		        
 		        JButton button = new JButton("Submit");
-		        button.setBounds(150, 140, 80, 25);
+		        button.setBounds(200, 140, 80, 25);
 		        panel.add(button);
 		        
 		        
@@ -637,8 +706,30 @@ public   class SistemaImpls implements Sistema{
 		        button.addActionListener(new ActionListener() {
 		            @Override
 		            public void actionPerformed(ActionEvent e) {
+		                String codigoReserva = CodigoText.getText();
+		                String fechaEntrega = fechaEntregaText.getText();
+		                
+		                if (useFechaActualCheckBox.isSelected()) {
+		                	String fechaPedido = fecha;
+		                	System.out.println(codigoReserva);
+		                	System.out.println(fechaEntrega);
+		                	System.out.println(fechaPedido+" fechapedido");
+		                }
+		                else {
+		                	String fechaPedido = fechaPedidoText.getText();
+		                	System.out.println(codigoReserva);
+		                	System.out.println(fechaEntrega);
+		                	System.out.println(fechaPedido+" fechapedido");
+		                }
+		            	
+
+		                
+		                
+		                
+		                /*
 		                String codigoElegido = CodigoText.getText();
 	            		JOptionPane.showMessageDialog(null, codigoElegido);
+		            	*/
 		            }
 		        });
 		        
