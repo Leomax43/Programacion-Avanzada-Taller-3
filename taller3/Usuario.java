@@ -15,6 +15,10 @@ public class Usuario extends Persona{
 		listaLibrosReservados.add(t);
 	}
 	
+	public void eliminarLibro(Texto t){
+		listaLibrosReservados.remove(t);
+	}
+	
 	public ArrayList<Texto> getListaLibrosReservados() {
 		return listaLibrosReservados;
 	}

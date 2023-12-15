@@ -13,7 +13,13 @@ public   class SistemaImpls implements Sistema{
 	private static ArrayList<Persona> listaPersonas=new ArrayList<>();
 	private ArrayList<Reserva> listaReservas=new ArrayList<>();
 	private ArrayList<Devolucion> listaDevoluciones=new ArrayList<>();
-
+	
+	//esta es para cerrar las listas de libros que se abren en ciertas ventanas
+	private JFrame frameListaTextos;
+	
+	
+	
+	
 	private SistemaImpls() {}
 	
 	public static SistemaImpls getInstancia(){
@@ -725,9 +731,6 @@ public   class SistemaImpls implements Sistema{
 		                
 		                if (useFechaActualCheckBox.isSelected()) {
 		                	String fechaPedido = fecha;
-		                	System.out.println(codigoReserva);
-		                	System.out.println(fechaEntrega);
-		                	System.out.println(fechaPedido+" fechapedido");
 		                	if (revisarDatosReserva(codigoReserva,fechaPedido,fechaEntrega,listaLibrosDisponibles)) {
 		                		reservarTexto(rut,codigoReserva,fechaPedido,fechaEntrega,listaLibrosDisponibles);
 		                		
@@ -750,9 +753,6 @@ public   class SistemaImpls implements Sistema{
 		                }
 		                else {
 		                	String fechaPedido = fechaPedidoText.getText();
-		                	System.out.println(codigoReserva);
-		                	System.out.println(fechaEntrega);
-		                	System.out.println(fechaPedido+" fechapedido");
 		                	if (revisarDatosReserva(codigoReserva,fechaPedido,fechaEntrega,listaLibrosDisponibles)) {
 		                		reservarTexto(rut,codigoReserva,fechaPedido,fechaEntrega,listaLibrosDisponibles);
 		                		
@@ -785,7 +785,7 @@ public   class SistemaImpls implements Sistema{
 	            		JOptionPane.showMessageDialog(null, codigoElegido);
 		            	*/
 		                
-		                
+						frameListaTextos.dispose();
 		                SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
 						String mensaje = "Libro Correctamente Reservado";
 	            		JOptionPane.showMessageDialog(null, mensaje);
@@ -899,9 +899,10 @@ public   class SistemaImpls implements Sistema{
 				
 				
 				// Crear una nueva ventana (JFrame)
-		        JFrame frame = new JFrame("Lista De textos Disponibles");
-		        frame.setSize(800, 300);
-		        frame.setLocationRelativeTo(null);
+
+		        frameListaTextos = new JFrame("Lista De textos Disponibles");
+		        frameListaTextos.setSize(800, 300);
+		        frameListaTextos.setLocationRelativeTo(null);
 
 		        // Crear un JTextArea para mostrar la lista
 		        JTextArea textArea = new JTextArea();
@@ -917,10 +918,10 @@ public   class SistemaImpls implements Sistema{
 		        JScrollPane scrollPane = new JScrollPane(textArea);
 
 		        // Agregar el JScrollPane al JFrame
-		        frame.add(scrollPane, BorderLayout.CENTER);
+		        frameListaTextos.add(scrollPane, BorderLayout.CENTER);
 
 		        // Mostrar la ventana
-		        frame.setVisible(true);
+		        frameListaTextos.setVisible(true);
 		        return listaLibrosDisponibles;
 			}
         });
@@ -938,17 +939,18 @@ public   class SistemaImpls implements Sistema{
 						listaLibrosReservados= ((Usuario) p).getListaLibrosReservados();
 					}
 				}
-            	mostrarLibrosReservados(listaLibrosReservados);
+            	boolean VoF = mostrarLibrosReservados(listaLibrosReservados);
             	
-            	JFrame frame = new JFrame("Menu Devolucion");
-            	frame.setSize(400, 300);
-            	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            	frame.setLocationRelativeTo(null);
-            	JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
-            	frame.add(panel);
-            	placeComponentsDevolucion(panel,fecha,listaLibrosReservados,rut);
-            	frame.setVisible(true);
-            	
+            	if (VoF) {
+            		JFrame frame = new JFrame("Menu Devolucion");
+            		frame.setSize(400, 300);
+            		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            		frame.setLocationRelativeTo(null);
+            		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
+            		frame.add(panel);
+            		placeComponentsDevolucion(panel,fecha,listaLibrosReservados,rut);
+            		frame.setVisible(true);
+            	}
             	
             	
             }
@@ -985,9 +987,95 @@ public   class SistemaImpls implements Sistema{
 						String codigo = CodigoText.getText();
 						boolean revisarCodigo = revisarCodigo(codigo);
 						if (revisarCodigo) {
-							System.out.println("funciono");
+							//llegamos hasta el texto en cuestion dentro de la lista
+							//ahora hay q revisar si esta dentro del plazo
+							String fechaDevolucion="";
+							int codigoReserva=0;
+							String devolucionOriginal="";
+							for (Reserva r: listaReservas) {
+								if (r.getCodigoObjeto()==Integer.parseInt(codigo)) {
+									fechaDevolucion = r.getFechaDevolucion();
+									codigoReserva=r.getCodigoReserva();
+									devolucionOriginal=r.getFechaDevolucion();
+								}
+							}
+							boolean revisarFechaCorrecta = revisarFecha(fecha,fechaDevolucion);
+							if (revisarFechaCorrecta) {
+								//el libro se entrego a tiempo
+								//por ende se elimina de manera normal
+								//se agrega al txt de devoluciones con un "pagado"
+								int contDevoluciones = contDevoluciones();
+								Devolucion d = new Devolucion(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pagado");
+								eliminarLibroListaPersonal(rut,codigo);
+								frameListaTextos.dispose();
+								SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+								String mensaje= "Libro Devuelto Correctamente";
+				        		JOptionPane.showMessageDialog(null, mensaje);
+							}
+							else {
+								//el libro se retraso
+								//por ende el usuario no puede entregarlo directamente
+								//debe entregarlo un Trabajador
+								//se agrega al txt de devoluciones con un pendiente
+								SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+								frameListaTextos.dispose();
+								String mensaje= "ERROR, Su entrega se ha retrasado, por ende, debe acercarse a un Trabajador para la devolucion";
+				        		JOptionPane.showMessageDialog(null, mensaje);
+				        		
+				        		/* de todos modos se usaria algo como esto
+								int contDevoluciones = contDevoluciones();
+								Devolucion d = new Devolucion(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pendiente");
+								*/
+
+							}
 						}
 						
+					}
+
+					private void eliminarLibroListaPersonal(String rut, String codigo) {
+						for (Persona p: listaPersonas) {
+							if (p instanceof Usuario && p.getRut().equals(rut) && p.getTipoPersona().equals("Usuario")) {
+								Texto t =null;
+								for (Texto texto: listaTextos) {
+									if(texto.getCodigo()==Integer.parseInt(codigo)) {
+										t = texto;
+									}
+								}
+								
+								((Usuario) p).eliminarLibro(t);
+							}
+						}
+					}
+
+					private int contDevoluciones() {
+						int cont=0;
+						for (Devolucion d: listaDevoluciones) {
+							cont++;
+						}
+						cont+=1000000;
+						return cont;
+					}
+
+					private boolean revisarFecha(String fecha, String fechaDevolucion) {
+						String[] partesFechaActual = fecha.split("/");
+						String[] partesFechaReserva =fechaDevolucion.split("-");
+						
+						int anioPedido = Integer.parseInt(partesFechaActual[0]);
+			            int mesPedido = Integer.parseInt(partesFechaActual[1]);
+			            int diaPedido = Integer.parseInt(partesFechaActual[2]);
+
+			            int anioEntrega = Integer.parseInt(partesFechaReserva[2]);
+			            int mesEntrega = Integer.parseInt(partesFechaReserva[1]);
+			            int diaEntrega = Integer.parseInt(partesFechaReserva[0]);
+
+			            // Comparación de fechas
+			            if (anioPedido < anioEntrega || 
+			                (anioPedido == anioEntrega && mesPedido < mesEntrega) || 
+			                (anioPedido == anioEntrega && mesPedido == mesEntrega && diaPedido <= diaEntrega)) {
+			                return true; // O realiza alguna acción si se cumple la condición
+			            }
+						
+						return false;
 					}
 
 					private boolean revisarCodigo(String codigo) {
@@ -1011,34 +1099,41 @@ public   class SistemaImpls implements Sistema{
 		        
 			}
 
-			private void mostrarLibrosReservados(ArrayList<Texto> listaLibrosReservados) {
-				JFrame frame = new JFrame("Lista De textos Disponibles");
-		        frame.setSize(800, 300);
-		        frame.setLocationRelativeTo(null);
+			private boolean mostrarLibrosReservados(ArrayList<Texto> listaLibrosReservados) {
+				frameListaTextos = new JFrame("Lista De textos Disponibles");
+				frameListaTextos.setSize(800, 300);
+				frameListaTextos.setLocationRelativeTo(null);
 		        //ola
 		        
 		        
 		        //alo
 		        
-		        
-		        // Crear un JTextArea para mostrar la lista
-		        JTextArea textArea = new JTextArea();
-		        textArea.setEditable(false); // Hacer el área de texto no editable
-
-		        // Agregar los elementos del ArrayList al JTextArea
-		        
-		        for (Texto elemento : listaLibrosReservados) {
-		            textArea.append(elemento + "\n"); // Agregar cada elemento seguido de un salto de línea
+		        if (listaLibrosReservados.size()==0) {
+		        	String mensaje= "Usted no Posee Libros en Reserva";
+	        		JOptionPane.showMessageDialog(null, mensaje);
+	        		return false;
 		        }
+		        else {
+		        	// Crear un JTextArea para mostrar la lista
+		        	JTextArea textArea = new JTextArea();
+		        	textArea.setEditable(false); // Hacer el área de texto no editable
+
+		        	// Agregar los elementos del ArrayList al JTextArea
 		        
-		        // Agregar el JTextArea a un JScrollPane para permitir el desplazamiento si hay muchos elementos
-		        JScrollPane scrollPane = new JScrollPane(textArea);
+		        	for (Texto elemento : listaLibrosReservados) {
+		        		textArea.append(elemento + "\n"); // Agregar cada elemento seguido de un salto de línea
+		        	}
+		        
+		        	// Agregar el JTextArea a un JScrollPane para permitir el desplazamiento si hay muchos elementos
+		        	JScrollPane scrollPane = new JScrollPane(textArea);
 
-		        // Agregar el JScrollPane al JFrame
-		        frame.add(scrollPane, BorderLayout.CENTER);
+		        	// Agregar el JScrollPane al JFrame
+		        	frameListaTextos.add(scrollPane, BorderLayout.CENTER);
 
-		        // Mostrar la ventana
-		        frame.setVisible(true);
+		        	// Mostrar la ventana
+		        	frameListaTextos.setVisible(true);
+		        	return true;
+		        }
 			}
         });
         
