@@ -16,7 +16,8 @@ public   class SistemaImpls implements Sistema{
 	
 	//esta es para cerrar las listas de libros que se abren en ciertas ventanas
 	private JFrame frameListaTextos;
-	
+	private JFrame frameListaMorosos;
+
 	
 	
 	
@@ -281,7 +282,6 @@ public   class SistemaImpls implements Sistema{
                 		revisarDatosCorrectos=true;
                 	}
 				}
-                System.out.println(fecha);
                 if(revisarDatosCorrectos && !fecha.isBlank()) {
 					SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
                 	String nombre = buscarNombreConRut(rut);
@@ -579,7 +579,7 @@ public   class SistemaImpls implements Sistema{
         panel.add(buttonPagar);
         
         
-        buttonReservar.addActionListener(new ActionListener() {
+        	buttonReservar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	boolean revisar = revisarSiUsuarioPuedeReservar(rut);
@@ -1142,9 +1142,55 @@ public   class SistemaImpls implements Sistema{
             @Override
             public void actionPerformed(ActionEvent e) {
 				//imprime la lista de libros que posee la persona
-				String mensaje= "Vericionado";
-        		JOptionPane.showMessageDialog(null, mensaje);
+            	ArrayList<Texto> listaLibrosReservados = null;
+            	for (Persona p : listaPersonas) {
+					if (p instanceof Usuario && p.getRut().equals(rut) && p.getTipoPersona().equals("Usuario")) {
+						listaLibrosReservados= ((Usuario) p).getListaLibrosReservados();
+					}
+				}
+            	boolean VoF = mostrarLibrosReservados(listaLibrosReservados);
+            	
+            	
+            	
             }
+
+
+			private boolean mostrarLibrosReservados(ArrayList<Texto> listaLibrosReservados) {
+				frameListaTextos = new JFrame("Lista De textos Disponibles");
+				frameListaTextos.setSize(800, 300);
+				frameListaTextos.setLocationRelativeTo(null);
+		        //ola
+		        
+		        
+		        //alo
+		        
+		        if (listaLibrosReservados.size()==0) {
+		        	String mensaje= "Usted no Posee Libros en Reserva";
+	        		JOptionPane.showMessageDialog(null, mensaje);
+	        		return false;
+		        }
+		        else {
+		        	// Crear un JTextArea para mostrar la lista
+		        	JTextArea textArea = new JTextArea();
+		        	textArea.setEditable(false); // Hacer el área de texto no editable
+
+		        	// Agregar los elementos del ArrayList al JTextArea
+		        
+		        	for (Texto elemento : listaLibrosReservados) {
+		        		textArea.append(elemento + "\n"); // Agregar cada elemento seguido de un salto de línea
+		        	}
+		        
+		        	// Agregar el JTextArea a un JScrollPane para permitir el desplazamiento si hay muchos elementos
+		        	JScrollPane scrollPane = new JScrollPane(textArea);
+
+		        	// Agregar el JScrollPane al JFrame
+		        	frameListaTextos.add(scrollPane, BorderLayout.CENTER);
+
+		        	// Mostrar la ventana
+		        	frameListaTextos.setVisible(true);
+		        	return true;
+		        }
+			}
         });
         
         
@@ -1153,9 +1199,253 @@ public   class SistemaImpls implements Sistema{
             public void actionPerformed(ActionEvent e) {
 				//le cobras un riñon
 				//pero antes le muestras cuanto debe y porque
-				String mensaje= "Riñonizado";
-        		JOptionPane.showMessageDialog(null, mensaje);
+            	ArrayList<Devolucion> pendientesPorPersona = new ArrayList<>();
+            	
+            	for (Devolucion devolucion : listaDevoluciones) {
+					if (devolucion.getEstadoDeuda().equals("pendiente")) {
+						int codigoReserva = devolucion.getCodigoReserva();
+						for (Reserva r: listaReservas) {
+							if (r.getCodigoReserva()==codigoReserva) {
+								String rutMoroso = r.getRut();
+								if (rutMoroso.equals(rut)) {
+									pendientesPorPersona.add(devolucion);
+								}
+							}
+						}
+					}
+				}
+            	
+            	
+            	if (pendientesPorPersona.size()==0) {
+            		String mensaje= "Usted no Posee Libros Morosos";
+	        		JOptionPane.showMessageDialog(null, mensaje);
+            	}
+            	else {
+            		
+            		mostrarCodigoDiasMorosos(pendientesPorPersona);
+            		
+            		JFrame frame = new JFrame("Menu Deudas");
+            		frame.setSize(400, 300);
+            		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+           			frame.setLocationRelativeTo(null);
+           			JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
+           			frame.add(panel);
+            		placeComponentsDeudas(panel,fecha,pendientesPorPersona,rut);
+           			frame.setVisible(true);
+            		
+            	}
             }
+
+			private void placeComponentsDeudas(JPanel panel, String fecha, ArrayList<Devolucion> pendientesPorPersona,
+					String rut) {
+				panel.setLayout(null);
+		    	
+		    	JLabel mensajeLabel = new JLabel("Ingresar Codigo de la deuda que quiera pagar");
+		        mensajeLabel.setBounds(70, 20, 800, 25);
+		        panel.add(mensajeLabel);
+		    	
+		    	
+		        JLabel CodigoLabel = new JLabel("Codigo: ");
+		        CodigoLabel.setBounds(100, 50, 80, 25);
+		        panel.add(CodigoLabel);
+
+		        JTextField CodigoText = new JTextField(20);
+		        CodigoText.setBounds(200, 50, 165, 25);
+		        panel.add(CodigoText);
+		        
+		        
+		        
+		        
+		        JCheckBox useFechaActualCheckBox = new JCheckBox("Pagar todas las Deudas");
+		        useFechaActualCheckBox.setBounds(60, 140, 140, 25);
+		        panel.add(useFechaActualCheckBox);
+		        
+		        useFechaActualCheckBox.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						if (useFechaActualCheckBox.isSelected()) {
+				            CodigoLabel.setVisible(false);
+				            CodigoText.setVisible(false);
+				            
+				            JLabel fechaHoyLabel = new JLabel("Se Cancelaran Todas Las Deudas");
+				            fechaHoyLabel.setBounds(80, 80, 800, 25);
+				            panel.add(fechaHoyLabel);
+				            panel.repaint();
+				        } else {
+				            CodigoLabel.setVisible(true);
+				            CodigoText.setVisible(true);
+
+				            Component[] components = panel.getComponents();
+				            for (Component component : components) {
+				                if (component instanceof JLabel) {
+				                    String text = ((JLabel) component).getText();
+				                    if (text.startsWith("Se Cancelaran Todas Las Deudas")) {
+				                        panel.remove(component);
+				                    }
+				                }
+				            }
+				            panel.revalidate();
+				            panel.repaint();
+				        }
+					}
+		        	
+		        });
+
+		        JButton button = new JButton("Submit");
+		        button.setBounds(200, 140, 80, 25);
+		        panel.add(button);
+		        
+		        // Acción al presionar el botón
+		        button.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						if (useFechaActualCheckBox.isSelected()) {
+							int pagoTotal = pagoTotalTotales(pendientesPorPersona);
+							
+							boolean pago = realmentePago(pagoTotal);
+	                		//ahora se elimina de la lista de la persona
+	                		
+	                		//y se modifica el txt devoluciones
+	                		//cambiando el "pendiente" por un "pagado"
+	                		return;
+						}
+						else {
+			                String codigoDeuda = CodigoText.getText();
+			                for (Devolucion devolucion : pendientesPorPersona) {
+			                	if (Integer.parseInt(codigoDeuda)==devolucion.getCodigoDevolucion()) {
+				                	//Ya encontraste la deuda de la persona en especifico
+			                		//por ende ahora se paga
+			                		//Como se paga?
+			                		//nose
+									int pagoTotal = pagoTotalUnoSolo(pendientesPorPersona,codigoDeuda);
+
+			                		boolean pago = realmentePago(pagoTotal);
+			                		//ahora se elimina de la lista de la persona
+			                		pendientesPorPersona.remove(devolucion);
+			                		
+			                		//y se modifica el txt devoluciones
+			                		//cambiando el "pendiente" por un "pagado"
+			                		return;
+			                		
+				                }
+			                	else {
+			                		//ingreso mal el codigo
+			                		String mensaje= "Codigo Incorrecto, Ingrese el codigo nuevamente";
+					        		JOptionPane.showMessageDialog(null, mensaje);
+			                	}
+							}
+			                
+			                
+						}
+					}
+
+					private int pagoTotalUnoSolo(ArrayList<Devolucion> pendientesPorPersona, String codigoDeuda) {
+			        	for (Devolucion d: pendientesPorPersona) {
+			        		if (Integer.parseInt(codigoDeuda)==d.getCodigoDevolucion()) {
+			        			int diasMorosos=contDiasMorosos(d,"");
+				        		int valor = diasMorosos*500;
+			        			
+			        			return valor;
+			        		}
+			        	}
+						
+						return 0;
+					}
+
+					private int pagoTotalTotales(ArrayList<Devolucion> pendientesPorPersona) {
+						int valorTotal=0;
+			        	for (Devolucion d: pendientesPorPersona) {
+			        		int diasMorosos=contDiasMorosos(d,"");
+			        		int valor = diasMorosos*500;
+			        		valorTotal+=valor;
+			        	}
+						
+						return valorTotal;
+					}
+
+					private boolean realmentePago(int pagoTotal) {
+						
+						System.out.println(pagoTotal);
+						return false;
+					}
+		        	
+		        });
+			}
+
+			private boolean mostrarCodigoDiasMorosos(ArrayList<Devolucion> pendientesPorPersona) {
+				frameListaMorosos = new JFrame("Lista De textos Disponibles");
+				frameListaMorosos.setSize(800, 300);
+				frameListaMorosos.setLocationRelativeTo(null);
+				
+				JTextArea textArea = new JTextArea();
+	        	textArea.setEditable(false); // Hacer el área de texto no editable
+
+	        	// Agregar los elementos del ArrayList al JTextArea
+	        
+	        	for (Devolucion d: pendientesPorPersona) {
+	        		int diasMorosos=contDiasMorosos(d,"");
+	        		int valor = diasMorosos*500;
+	        		String nombreLibro = obtenerNombreLibro(d);
+	        		textArea.append("Codigo: "+d.getCodigoDevolucion()+", Nombre Libro: "+nombreLibro+", Dias Morosos: "+diasMorosos +", Valor: "+valor+ "\n"); // Agregar cada elemento seguido de un salto de línea
+	        	}
+	        
+	        	// Agregar el JTextArea a un JScrollPane para permitir el desplazamiento si hay muchos elementos
+	        	JScrollPane scrollPane = new JScrollPane(textArea);
+
+	        	// Agregar el JScrollPane al JFrame
+	        	frameListaMorosos.add(scrollPane, BorderLayout.CENTER);
+
+	        	// Mostrar la ventana
+	        	frameListaMorosos.setVisible(true);
+				
+				
+				return false;
+				
+			}
+
+			private String obtenerNombreLibro(Devolucion d) {
+				for (Reserva r: listaReservas) {
+					if(r.getCodigoReserva()==d.getCodigoReserva()) {
+						int codigoTexto=r.getCodigoObjeto();
+						for (Texto t: listaTextos) {
+							if(t.getCodigo()==codigoTexto) {
+								return t.getNombre_texto();
+							}
+						}
+					}
+				}
+				return null;
+			}
+
+			private int contDiasMorosos(Devolucion devolucion, String fecha) {
+				String fechaOriginal = devolucion.getFechaDevolucionOriginal();
+				String fechaReal = devolucion.getFechaDevolucionReal();
+
+				String[] partesFechaOriginal = fechaOriginal.split("-");
+				String[] partesFechaActual = fechaReal.split("-");
+				
+
+			    int anioOriginal = Integer.parseInt(partesFechaOriginal[2]);
+			    int mesOriginal = Integer.parseInt(partesFechaOriginal[1]);
+			    int diaOriginal = Integer.parseInt(partesFechaOriginal[0]);
+
+			    int anioActual = Integer.parseInt(partesFechaActual[2]);
+			    int mesActual = Integer.parseInt(partesFechaActual[1]);
+			    int diaActual = Integer.parseInt(partesFechaActual[0]);
+
+			    // Cálculo de la diferencia de días
+			    int diffAnios = anioActual - anioOriginal;
+			    int diffMeses = mesActual - mesOriginal;
+			    int diffDias = diaActual - diaOriginal;
+
+			    int totalDias = diffAnios * 365 + diffMeses * 30 + diffDias;
+			    
+			    return totalDias; // Devuelve la diferencia en días
+				
+				
+			}
         });
         
 	}

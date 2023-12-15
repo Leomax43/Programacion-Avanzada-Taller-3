@@ -41,5 +41,11 @@ public class Devolucion {
 	public void setEstadoDeuda(String estadoDeuda) {
 		this.estadoDeuda = estadoDeuda;
 	}
+	@Override
+	public String toString() {
+		return "Devolucion [codigoDevolucion=" + codigoDevolucion + ", codigoReserva=" + codigoReserva
+				+ ", fechaDevolucionOriginal=" + fechaDevolucionOriginal + ", fechaDevolucionReal="
+				+ fechaDevolucionReal + ", estadoDeuda=" + estadoDeuda + "]";
+	}
 	
 }
