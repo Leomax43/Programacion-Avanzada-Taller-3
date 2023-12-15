@@ -92,33 +92,6 @@ public   class SistemaImpls implements Sistema{
 		}
 		scPersonas.close();
 		
-		Scanner scReservas = new Scanner(new File("reservas.txt"));
-		while (scReservas.hasNextLine()) {
-			String lineaReserva = scReservas.nextLine();
-			String[] partesReserva = lineaReserva.split(",");
-			
-			//lo mismo q recien
-			//se agrega
-			//se agrega a la listareservas
-			listaReservas.add(new Reserva(Integer.parseInt(partesReserva[0]), partesReserva[1], Integer.parseInt(partesReserva[2]), partesReserva[3], partesReserva[4]));
-			//Resrvas listas ahora lo demas
-			
-			//ademas hay q agregarlo a la lista de reservas de cada persona
-			for (Persona p : listaPersonas) {
-			    if (p instanceof Usuario && p.getRut().equals(partesReserva[1]) && p.getTipoPersona().equals("Usuario")) {
-					//podriamos agregar solo el codigo del libro?
-					//o el libro entero nose
-					for (Texto t: listaTextos) {
-						if (Integer.parseInt(partesReserva[2])==t.getCodigo()) {
-							((Usuario) p).agregarLibro(t);
-						}
-					}
-				}
-			}
-		}
-		scReservas.close();
-		
-		
 		Scanner scDevolucion = new Scanner(new File("devoluciones.txt"));
 		while (scDevolucion.hasNextLine()) {
 			String lineaDevolucion = scDevolucion.nextLine();
@@ -133,9 +106,50 @@ public   class SistemaImpls implements Sistema{
 		}
 		scDevolucion.close();
 		
+		
+		Scanner scReservas = new Scanner(new File("reservas.txt"));
+		while (scReservas.hasNextLine()) {
+			String lineaReserva = scReservas.nextLine();
+			String[] partesReserva = lineaReserva.split(",");
+			
+			//lo mismo q recien
+			//se agrega
+			//se agrega a la listareservas
+			listaReservas.add(new Reserva(Integer.parseInt(partesReserva[0]), partesReserva[1], Integer.parseInt(partesReserva[2]), partesReserva[3], partesReserva[4]));
+			//Resrvas listas ahora lo demas
+			
+			//ademas hay q agregarlo a la lista de reservas de cada persona
+			for (Persona p : listaPersonas) {
+			    if (p instanceof Usuario && p.getRut().equals(partesReserva[1]) && p.getTipoPersona().equals("Usuario") ) {
+					//podriamos agregar solo el codigo del libro?
+					//o el libro entero nose
+					for (Texto t: listaTextos) {
+						//se revisa si el codigo de la reserva es igual al codigo del texto
+						//se revisa si se devolvio o no
+						if (Integer.parseInt(partesReserva[2])==t.getCodigo()  && noDevuelto(Integer.parseInt(partesReserva[0]))) {
+							((Usuario) p).agregarLibro(t);
+						}
+					}
+				}
+			}
+		}
+		scReservas.close();
+		
+		
+		
+		
 	}
 
 		
+	private boolean noDevuelto(int codigoReserva) {
+		for (Devolucion devolucion : listaDevoluciones) {
+			if(devolucion.getCodigoReserva()==codigoReserva) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	@Override
 	public void ingresarRegistrarse() {
 		JFrame frame = new JFrame("Menu Principal");
@@ -717,6 +731,9 @@ public   class SistemaImpls implements Sistema{
 		                	if (revisarDatosReserva(codigoReserva,fechaPedido,fechaEntrega,listaLibrosDisponibles)) {
 		                		reservarTexto(rut,codigoReserva,fechaPedido,fechaEntrega,listaLibrosDisponibles);
 		                		
+		                		
+		                		
+		                		/*
 								for (Persona p : listaPersonas) {
 									if (p instanceof Usuario && p.getRut().equals(rut) && p.getTipoPersona().equals("Usuario")) {
 										ArrayList<Texto> minilista =((Usuario) p).getListaLibrosReservados();
@@ -725,8 +742,9 @@ public   class SistemaImpls implements Sistema{
 										}
 									}
 								}
-
-		                		//se modifica el txt
+								esto es para probar si se agrega
+		                		 */
+		                		//se modifica el txt de reservas
 		                		
 		                	}
 		                }
@@ -738,6 +756,8 @@ public   class SistemaImpls implements Sistema{
 		                	if (revisarDatosReserva(codigoReserva,fechaPedido,fechaEntrega,listaLibrosDisponibles)) {
 		                		reservarTexto(rut,codigoReserva,fechaPedido,fechaEntrega,listaLibrosDisponibles);
 		                		
+		                		
+		                		/*
 		                		for (Persona p : listaPersonas) {
 									if (p instanceof Usuario && p.getRut().equals(rut) && p.getTipoPersona().equals("Usuario")) {
 										ArrayList<Texto> minilista =((Usuario) p).getListaLibrosReservados();
@@ -746,11 +766,13 @@ public   class SistemaImpls implements Sistema{
 										}
 									}
 								}
+								lo mismo q arriba
+								*/
 		                		
 		                		
 		                		
 		                		
-		                		//se modifica el txt
+		                		//se modifica el txt de reservas
 		                	}
 		                }
 		            	
@@ -781,11 +803,27 @@ public   class SistemaImpls implements Sistema{
 							if (p instanceof Usuario && p.getRut().equals(rut) && p.getTipoPersona().equals("Usuario")) {
 								for (Texto texto : listaLibrosDisponibles) {
 									if (texto.getCodigo()==Integer.parseInt(codigoReserva)) {
+										//se agrega el texto a la lista personal de textos
 										((Usuario) p).agregarLibro(texto);
+										//se agrega la nueva reserva a la lista reservas
+										int contReservas = contadorReservas();
+										Reserva r = new Reserva(contReservas,rut,texto.getCodigo(),fechaPedido,fechaEntrega);
+										listaReservas.add(r);
 									}
 								}
 							}
 						}
+					}
+
+
+
+					private int contadorReservas() {
+						int cont=0;
+						for (Reserva r : listaReservas) {
+							cont++;
+						}
+						cont+=100000;
+						return cont;
 					}
 
 
@@ -894,9 +932,114 @@ public   class SistemaImpls implements Sistema{
 				//se revisa si se puede devolver
 				//se devuelve
 				//o tal vez no
-				String mensaje= "Devolucionado";
-        		JOptionPane.showMessageDialog(null, mensaje);
+            	ArrayList<Texto> listaLibrosReservados = null;
+            	for (Persona p : listaPersonas) {
+					if (p instanceof Usuario && p.getRut().equals(rut) && p.getTipoPersona().equals("Usuario")) {
+						listaLibrosReservados= ((Usuario) p).getListaLibrosReservados();
+					}
+				}
+            	mostrarLibrosReservados(listaLibrosReservados);
+            	
+            	JFrame frame = new JFrame("Menu Devolucion");
+            	frame.setSize(400, 300);
+            	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            	frame.setLocationRelativeTo(null);
+            	JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
+            	frame.add(panel);
+            	placeComponentsDevolucion(panel,fecha,listaLibrosReservados,rut);
+            	frame.setVisible(true);
+            	
+            	
+            	
             }
+
+			private void placeComponentsDevolucion(JPanel panel, String fecha, ArrayList<Texto> listaLibrosReservados,
+					String rut) {
+				panel.setLayout(null);
+		    	
+		    	JLabel mensajeLabel = new JLabel("Ingresar Codigo del Texto que quiera Devolver");
+		        mensajeLabel.setBounds(70, 20, 800, 25);
+		        panel.add(mensajeLabel);
+		    	
+		    	
+		        JLabel CodigoLabel = new JLabel("Codigo: ");
+		        CodigoLabel.setBounds(100, 50, 80, 25);
+		        panel.add(CodigoLabel);
+
+		        JTextField CodigoText = new JTextField(20);
+		        CodigoText.setBounds(200, 50, 165, 25);
+		        panel.add(CodigoText);
+		        
+		        JButton button = new JButton("Submit");
+		        button.setBounds(200, 140, 80, 25);
+		        panel.add(button);
+		        
+		        
+		        
+		        
+		        // Acción al presionar el botón
+		        button.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						String codigo = CodigoText.getText();
+						boolean revisarCodigo = revisarCodigo(codigo);
+						if (revisarCodigo) {
+							System.out.println("funciono");
+						}
+						
+					}
+
+					private boolean revisarCodigo(String codigo) {
+						for (Persona p : listaPersonas) {
+							if (p instanceof Usuario && p.getRut().equals(rut) && p.getTipoPersona().equals("Usuario")) {
+								ArrayList<Texto> minilista =((Usuario) p).getListaLibrosReservados();
+								for (Texto texto : minilista) {
+									if (Integer.parseInt(codigo)==texto.getCodigo()) {
+										return true;
+									}
+									
+									
+								}
+							}
+						}
+						return false;
+					}
+		        	
+		        });
+		        
+		        
+			}
+
+			private void mostrarLibrosReservados(ArrayList<Texto> listaLibrosReservados) {
+				JFrame frame = new JFrame("Lista De textos Disponibles");
+		        frame.setSize(800, 300);
+		        frame.setLocationRelativeTo(null);
+		        //ola
+		        
+		        
+		        //alo
+		        
+		        
+		        // Crear un JTextArea para mostrar la lista
+		        JTextArea textArea = new JTextArea();
+		        textArea.setEditable(false); // Hacer el área de texto no editable
+
+		        // Agregar los elementos del ArrayList al JTextArea
+		        
+		        for (Texto elemento : listaLibrosReservados) {
+		            textArea.append(elemento + "\n"); // Agregar cada elemento seguido de un salto de línea
+		        }
+		        
+		        // Agregar el JTextArea a un JScrollPane para permitir el desplazamiento si hay muchos elementos
+		        JScrollPane scrollPane = new JScrollPane(textArea);
+
+		        // Agregar el JScrollPane al JFrame
+		        frame.add(scrollPane, BorderLayout.CENTER);
+
+		        // Mostrar la ventana
+		        frame.setVisible(true);
+			}
         });
         
         
