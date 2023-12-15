@@ -13,12 +13,14 @@ public   class SistemaImpls implements Sistema{
 	private static ArrayList<Persona> listaPersonas=new ArrayList<>();
 	private ArrayList<Reserva> listaReservas=new ArrayList<>();
 	private ArrayList<Devolucion> listaDevoluciones=new ArrayList<>();
-	
+	private ArrayList<Devolucion> pendientesPorPersona = new ArrayList<>();
 	//esta es para cerrar las listas de libros que se abren en ciertas ventanas
 	private JFrame frameListaTextos;
 	private JFrame frameListaMorosos;
 
-	
+	//esto es para el pago
+	private boolean pago = false;
+
 	
 	
 	private SistemaImpls() {}
@@ -578,8 +580,20 @@ public   class SistemaImpls implements Sistema{
         buttonPagar.setBounds(100, 40, 80, 25);
         panel.add(buttonPagar);
         
-        
-        	buttonReservar.addActionListener(new ActionListener() {
+        for (Devolucion devolucion : listaDevoluciones) {
+			if (devolucion.getEstadoDeuda().equals("pendiente")) {
+				int codigoReserva = devolucion.getCodigoReserva();
+				for (Reserva r: listaReservas) {
+					if (r.getCodigoReserva()==codigoReserva) {
+						String rutMoroso = r.getRut();
+						if (rutMoroso.equals(rut)) {
+							pendientesPorPersona.add(devolucion);
+						}
+					}
+				}
+			}
+		}
+        buttonReservar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	boolean revisar = revisarSiUsuarioPuedeReservar(rut);
@@ -1199,21 +1213,8 @@ public   class SistemaImpls implements Sistema{
             public void actionPerformed(ActionEvent e) {
 				//le cobras un riñon
 				//pero antes le muestras cuanto debe y porque
-            	ArrayList<Devolucion> pendientesPorPersona = new ArrayList<>();
             	
-            	for (Devolucion devolucion : listaDevoluciones) {
-					if (devolucion.getEstadoDeuda().equals("pendiente")) {
-						int codigoReserva = devolucion.getCodigoReserva();
-						for (Reserva r: listaReservas) {
-							if (r.getCodigoReserva()==codigoReserva) {
-								String rutMoroso = r.getRut();
-								if (rutMoroso.equals(rut)) {
-									pendientesPorPersona.add(devolucion);
-								}
-							}
-						}
-					}
-				}
+            	
             	
             	
             	if (pendientesPorPersona.size()==0) {
@@ -1222,7 +1223,7 @@ public   class SistemaImpls implements Sistema{
             	}
             	else {
             		
-            		mostrarCodigoDiasMorosos(pendientesPorPersona);
+            		mostrarCodigoDiasMorosos();
             		
             		JFrame frame = new JFrame("Menu Deudas");
             		frame.setSize(400, 300);
@@ -1230,13 +1231,13 @@ public   class SistemaImpls implements Sistema{
            			frame.setLocationRelativeTo(null);
            			JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
            			frame.add(panel);
-            		placeComponentsDeudas(panel,fecha,pendientesPorPersona,rut);
+            		placeComponentsDeudas(panel,fecha,rut);
            			frame.setVisible(true);
             		
             	}
             }
 
-			private void placeComponentsDeudas(JPanel panel, String fecha, ArrayList<Devolucion> pendientesPorPersona,
+			private void placeComponentsDeudas(JPanel panel, String fecha,
 					String rut) {
 				panel.setLayout(null);
 		    	
@@ -1302,46 +1303,80 @@ public   class SistemaImpls implements Sistema{
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						if (useFechaActualCheckBox.isSelected()) {
-							int pagoTotal = pagoTotalTotales(pendientesPorPersona);
+			                SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+				        	frameListaMorosos.setVisible(false);
+
+							int pagoTotal = pagoTotalTotales();
 							
-							boolean pago = realmentePago(pagoTotal);
-	                		//ahora se elimina de la lista de la persona
-	                		
-	                		//y se modifica el txt devoluciones
-	                		//cambiando el "pendiente" por un "pagado"
+							boolean pago = true;
+							realmentePago(pagoTotal);
+	                		if (pago) {
+	                			//ahora se elimina de la lista de la persona
+	                			
+	                			
+	                			//y se modifica el txt devoluciones
+	                			//cambiando el "pendiente" por un "pagado"
+	                			modificarTxtDevoluciones(pendientesPorPersona);
+	                			
+	                			pendientesPorPersona.clear();
+	                		}
 	                		return;
 						}
 						else {
 			                String codigoDeuda = CodigoText.getText();
+			                SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+				        	frameListaMorosos.setVisible(false);
+			                int contError =0;
 			                for (Devolucion devolucion : pendientesPorPersona) {
 			                	if (Integer.parseInt(codigoDeuda)==devolucion.getCodigoDevolucion()) {
 				                	//Ya encontraste la deuda de la persona en especifico
 			                		//por ende ahora se paga
 			                		//Como se paga?
 			                		//nose
-									int pagoTotal = pagoTotalUnoSolo(pendientesPorPersona,codigoDeuda);
+									int pagoTotal = pagoTotalUnoSolo(codigoDeuda);
 
-			                		boolean pago = realmentePago(pagoTotal);
+			                		boolean pago = true;
+			                		realmentePago(pagoTotal);
 			                		//ahora se elimina de la lista de la persona
-			                		pendientesPorPersona.remove(devolucion);
-			                		
-			                		//y se modifica el txt devoluciones
-			                		//cambiando el "pendiente" por un "pagado"
+			                		if (pago) {
+			                			pendientesPorPersona.remove(devolucion);
+			                			//y se modifica el txt devoluciones
+			                			//cambiando el "pendiente" por un "pagado"
+			                			int d = listaDevoluciones.indexOf(devolucion);
+			                			Devolucion de = listaDevoluciones.get(d);
+			                			listaDevoluciones.remove(d);
+			                			Devolucion devo = new Devolucion(de.getCodigoDevolucion(),de.getCodigoReserva(),de.getFechaDevolucionOriginal(),de.getFechaDevolucionReal(),"pagado");
+			                			listaDevoluciones.add(devo);
+			                			
+			                		}
+			                		contError++;
 			                		return;
 			                		
 				                }
-			                	else {
-			                		//ingreso mal el codigo
-			                		String mensaje= "Codigo Incorrecto, Ingrese el codigo nuevamente";
-					        		JOptionPane.showMessageDialog(null, mensaje);
-			                	}
 							}
+			                if (contError==0) {
+			                	//ingreso mal el codigo
+			                	String mensaje= "Codigo Incorrecto, Ingrese el codigo nuevamente";
+			                	JOptionPane.showMessageDialog(null, mensaje);
+			                	
+			                }
 			                
 			                
 						}
+
 					}
 
-					private int pagoTotalUnoSolo(ArrayList<Devolucion> pendientesPorPersona, String codigoDeuda) {
+					private void modificarTxtDevoluciones(ArrayList<Devolucion> pendientesPorPersona) {
+						for (Devolucion devolucion : pendientesPorPersona) {
+							int d = listaDevoluciones.indexOf(devolucion);
+                			Devolucion de = listaDevoluciones.get(d);
+                			listaDevoluciones.remove(d);
+                			Devolucion devo = new Devolucion(de.getCodigoDevolucion(),de.getCodigoReserva(),de.getFechaDevolucionOriginal(),de.getFechaDevolucionReal(),"pagado");
+                			listaDevoluciones.add(devo);
+						}
+					}
+
+					private int pagoTotalUnoSolo(String codigoDeuda) {
 			        	for (Devolucion d: pendientesPorPersona) {
 			        		if (Integer.parseInt(codigoDeuda)==d.getCodigoDevolucion()) {
 			        			int diasMorosos=contDiasMorosos(d,"");
@@ -1354,7 +1389,7 @@ public   class SistemaImpls implements Sistema{
 						return 0;
 					}
 
-					private int pagoTotalTotales(ArrayList<Devolucion> pendientesPorPersona) {
+					private int pagoTotalTotales() {
 						int valorTotal=0;
 			        	for (Devolucion d: pendientesPorPersona) {
 			        		int diasMorosos=contDiasMorosos(d,"");
@@ -1365,16 +1400,17 @@ public   class SistemaImpls implements Sistema{
 						return valorTotal;
 					}
 
-					private boolean realmentePago(int pagoTotal) {
-						
-						System.out.println(pagoTotal);
-						return false;
+					private void realmentePago(int pagoTotal) {
+						String mensaje = "Son "+pagoTotal;
+	            		JOptionPane.showMessageDialog(null, mensaje);
 					}
+
+					
 		        	
 		        });
 			}
 
-			private boolean mostrarCodigoDiasMorosos(ArrayList<Devolucion> pendientesPorPersona) {
+			private boolean mostrarCodigoDiasMorosos() {
 				frameListaMorosos = new JFrame("Lista De textos Disponibles");
 				frameListaMorosos.setSize(800, 300);
 				frameListaMorosos.setLocationRelativeTo(null);
