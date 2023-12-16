@@ -20,6 +20,7 @@ public   class SistemaImpls implements Sistema{
 	private JFrame frameListaReservasNoDevueltas;
 	private JFrame frameListaReservasDevueltas;
 	private JFrame frameTodosLosLibrosBiblioteca;
+	private JFrame frameEstadisticas;
 
 
 	//esto es para el pago
@@ -553,7 +554,6 @@ public   class SistemaImpls implements Sistema{
 	@Override
 	public void menuTrabajador(String rut, String fecha) {
 		// TODO Auto-generated method stub
-		System.out.println("yo trabajo");
 		JFrame frame = new JFrame("Menu Ingreso");
         frame.setSize(400, 300);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -1545,7 +1545,7 @@ public   class SistemaImpls implements Sistema{
 			}
 
 			private void imprimirTodosLosTextosBiblioteca() {
-				frameTodosLosLibrosBiblioteca = new JFrame("Lista de Reservas NO Devueltas");
+				frameTodosLosLibrosBiblioteca = new JFrame("Lista de Todos los Libros de la Biblioteca");
 				frameTodosLosLibrosBiblioteca.setSize(800, 300);
 				frameTodosLosLibrosBiblioteca.setLocationRelativeTo(null);
 				frameTodosLosLibrosBiblioteca.setLocation(0, 0);
@@ -1554,7 +1554,7 @@ public   class SistemaImpls implements Sistema{
 		        textArea.setEditable(false); // Hacer el área de texto no editable
 
 		        // Agregar los elementos del ArrayList al JTextArea
-		        textArea.append("Lista de Reservas NO Devueltas" + "\n");
+		        textArea.append("Lista de Todos los Libros de la Biblioteca" + "\n");
 
 		        for (Texto t: listaTextos) {
 		            textArea.append(t.toString() + "\n"); // Agregar cada elemento seguido de un salto de línea
@@ -1694,8 +1694,293 @@ public   class SistemaImpls implements Sistema{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
+				String textoMasSolicitado= buscarTextoMasSolicitado();
+				String textoMenosSolicitado = buscarTextoMenosSolicitado();
+				String textoMasAtrasado = buscartextoMasAtrasado();
+				String usuarioConMasMultas = buscarusuarioConMasMultas();
+				String usuarioMasReservas = buscarusuarioMasReservas();
+				System.out.println(textoMasSolicitado);
+				System.out.println(textoMenosSolicitado);
+				System.out.println(textoMasAtrasado);
+				System.out.println(usuarioConMasMultas);
+				System.out.println(usuarioMasReservas);
+
+				frameEstadisticas = new JFrame("Lista de Reservas Ya Devueltas");
+				frameEstadisticas.setSize(1000, 300);
+				frameEstadisticas.setLocationRelativeTo(null);
+
+		        // Crear un JTextArea para mostrar la lista
+		        JTextArea textArea = new JTextArea();
+		        textArea.setEditable(false); // Hacer el área de texto no editable
+
+		        // Agregar los elementos del ArrayList al JTextArea
+		        textArea.append("Estadisticas" + "\n");
+		        textArea.append("El texto mas Solicitado es: "+textoMasSolicitado + "\n"); 
+		        textArea.append("El texto menos Solicitado es: "+textoMenosSolicitado + "\n"); 
+		        textArea.append("El texto con mayor cantidad de atrasos es: "+textoMasAtrasado + "\n"); 
+		        textArea.append("El Usuario con mayor cant de multas es: "+usuarioConMasMultas + "\n"); 
+		        textArea.append("El Usuario con mayor cant de reservas es: "+usuarioMasReservas + "\n"); 
+
+		        // Agregar el JTextArea a un JScrollPane para permitir el desplazamiento si hay muchos elementos
+		        JScrollPane scrollPane = new JScrollPane(textArea);
+
+		        // Agregar el JScrollPane al JFrame
+		        frameEstadisticas.add(scrollPane, BorderLayout.CENTER);
+
+		        // Mostrar la ventana
+		        frameEstadisticas.setVisible(true);
+			}
+
+			private String buscarusuarioMasReservas() {
+				/*
+				 * en este habria que buscar simplemente la persona que tenga mas lineas
+				 * de reservas en todas las reservas)?
+				 * algo asi
+				 * 
+				 * en esencia es lo mismo que el anterior buscarusuarioConMasMultas();
+				 * pero le quitas la condicion de los dias(revisar si hay retraso)
+				 * y cuenta solo las lineas de las reservas
+				 * 
+				 */
+				ArrayList<Persona> PersonasMayores = new ArrayList<>();
+
+				int contMayor=0;
+				for (Persona p: listaPersonas) {
+					int contParaCadaPersona=0;
+					if (p instanceof Usuario  && p.getTipoPersona().equals("Usuario")) {
+						String rut = p.getRut();
+						for (Reserva r: listaReservas) {
+							if(r.getRut().equals(rut)) {
+								contParaCadaPersona++;
+							}
+						}
+						if(contParaCadaPersona>contMayor) {
+							contMayor=contParaCadaPersona;
+							PersonasMayores.clear(); 
+							PersonasMayores.add(p);
+						}
+						else if (contParaCadaPersona == contMayor) {
+							PersonasMayores.add(p); 
+					    }
+						
+					}
+				}
+				if (contMayor == 0) {
+				    // No hay textos
+				    return "No hay Personas Con Atrasos";
+				} else if (PersonasMayores.size() == 1) {
+				    // Solo hay un texto con la cantidad máxima de Atrasos
+				    return PersonasMayores.get(0).toString()+" con cant de reservas: "+contMayor;
+				    										//+" con "+contMayor+" multas"
+				} else {
+				    // Hay más de un texto con la misma cantidad máxima de Atrasos
+				    // Aquí se devuelve un mensaje indicando que hay más de un texto con la misma cantidad de Atrasos máxima
+				    return "Hay múltiples Personas con la misma cantidad Atrasos ";
+				}
+			}
+
+			private String buscarusuarioConMasMultas() {
+				/*
+				 * el usuario con mas multas es aquel que se atraso mas veces
+				 * hay q revisar la lista de reservas e ir usuario por usuario
+				 * revisando si el texto lo entrego a tiempo o no
+				 * 
+				 * 
+				 * 
+				 */
+				ArrayList<Persona> PersonasMayores = new ArrayList<>();
+
+				int contMayor=0;
+				for (Persona p: listaPersonas) {
+					int contParaCadaPersona=0;
+					if (p instanceof Usuario  && p.getTipoPersona().equals("Usuario")) {
+						String rut = p.getRut();
+						for (Reserva r: listaReservas) {
+							if(r.getRut().equals(rut)) {
+								for (Devolucion d: listaDevoluciones) {
+									if(r.getCodigoReserva()==d.getCodigoReserva() && revisarSiHayRetraso(d.getFechaDevolucionOriginal(),d.getFechaDevolucionReal())) {
+										contParaCadaPersona++;
+									}
+								}
+							}
+						}
+						if(contParaCadaPersona>contMayor) {
+							contMayor=contParaCadaPersona;
+							PersonasMayores.clear(); 
+							PersonasMayores.add(p);
+						}
+						else if (contParaCadaPersona == contMayor) {
+							PersonasMayores.add(p); 
+					    }
+						
+					}
+				}
+				if (contMayor == 0) {
+				    // No hay textos
+				    return "No hay Personas Con Atrasos";
+				} else if (PersonasMayores.size() == 1) {
+				    // Solo hay un texto con la cantidad máxima de Atrasos
+				    return PersonasMayores.get(0).toString()+" con "+contMayor+" multas";
+				} else {
+				    // Hay más de un texto con la misma cantidad máxima de Atrasos
+				    // Aquí se devuelve un mensaje indicando que hay más de un texto con la misma cantidad de Atrasos máxima
+				    return "Hay múltiples Personas con la misma cantidad Atrasos ";
+				}
 				
+				
+				
+			}
+
+			private String buscartextoMasAtrasado() {
+				//el texto que tenga mas atrasos sera aquel que
+				//en el txt devoluciones tenga mas cantidad de lineas con
+				//la fecha orginal superando a la fecha real
+				//pero cada linea de devolucion tiene una referencia a
+				/*las reservas por ende hay que pasar primero por las reservas
+				 * y en reservas podemos ver el codigo del texto
+				 * 
+				 * mejor al reves
+				 * vamos texto por texto recorriendo la lista de reservas
+				 * luego por cada reserva revisamos la lista de devoluciones
+				 * y comprobamos si efectivamente se entrego en el plazo
+				 * o se entrego tarde
+				 * si se entrego en el plazo no se hace nada
+				 * pero si se entrega tarde se suma +1 a un cont
+				 * y asi tenemos un indice numerico para buscar al mas atrasado
+				 * yangale
+				 * 
+				 *
+				 * 
+				 */
+				ArrayList<Texto> textosMayores = new ArrayList<>();
+
+				int contMayor=0;
+				for (Texto t: listaTextos) {
+					int contParaCadaTexto =0;
+					for (Reserva r: listaReservas) {
+						if (t.getCodigo()==r.getCodigoObjeto()) {
+							for (Devolucion d: listaDevoluciones) {
+								/*
+								 * Se revisa si hay Devoluciones y ademas si estas fueron
+								 * retrasadas
+								 */
+								if(r.getCodigoReserva()==d.getCodigoReserva() && revisarSiHayRetraso(d.getFechaDevolucionOriginal(),d.getFechaDevolucionReal())) {
+									contParaCadaTexto++;
+								}
+							}
+						}
+						if(contParaCadaTexto>contMayor) {
+							contMayor=contParaCadaTexto;
+							textosMayores.clear(); 
+					        textosMayores.add(t);
+						}
+						else if (contParaCadaTexto == contMayor) {
+					        textosMayores.add(t); 
+					    }
+					}
+					
+					
+				}
+				if (contMayor == 0) {
+				    // No hay textos
+				    return "No hay Textos Atrasados";
+				} else if (textosMayores.size() == 1) {
+				    // Solo hay un texto con la cantidad máxima de Atrasos
+				    return textosMayores.get(0).toString()+" con "+contMayor+" veces atrasado";
+				} else {
+				    // Hay más de un texto con la misma cantidad máxima de Atrasos
+				    // Aquí se devuelve un mensaje indicando que hay más de un texto con la misma cantidad de Atrasos máxima
+				    return "Hay múltiples textos con la misma cantidad Atrasos ";
+				}
+				
+			}
+
+			private boolean revisarSiHayRetraso(String fechaDevolucionOriginal, String fechaDevolucionReal) {
+				String[] partesFechaActual = fechaDevolucionOriginal.split("-");
+				String[] partesFechaReserva =fechaDevolucionReal.split("-");
+				
+				int anioPedido = Integer.parseInt(partesFechaActual[2]);
+	            int mesPedido = Integer.parseInt(partesFechaActual[1]);
+	            int diaPedido = Integer.parseInt(partesFechaActual[0]);
+
+	            int anioEntrega = Integer.parseInt(partesFechaReserva[2]);
+	            int mesEntrega = Integer.parseInt(partesFechaReserva[1]);
+	            int diaEntrega = Integer.parseInt(partesFechaReserva[0]);
+
+	            // Comparación de fechas
+	            if (anioPedido < anioEntrega || 
+	                (anioPedido == anioEntrega && mesPedido < mesEntrega) || 
+	                (anioPedido == anioEntrega && mesPedido == mesEntrega && diaPedido < diaEntrega)) {
+	                return true; 
+	            }
+				
+				return false;
+				
+			}
+
+			private String buscarTextoMenosSolicitado() {
+				ArrayList<Texto> textosMenosSolicitados = new ArrayList<>();
+				int contMenor = Integer.MAX_VALUE;
+
+				// Encuentra la cantidad mínima de reservas
+				for (Texto t : listaTextos) {
+				    int contParaCadaTexto = 0;
+				    for (Reserva r : listaReservas) {
+				        if (t.getCodigo() == r.getCodigoObjeto()) {
+				            contParaCadaTexto++;
+				        }
+				    }
+				    if (contParaCadaTexto < contMenor) {
+				        contMenor = contParaCadaTexto;
+				        textosMenosSolicitados.clear(); 
+				        textosMenosSolicitados.add(t); 
+				    } else if (contParaCadaTexto == contMenor) {
+				        textosMenosSolicitados.add(t); 
+				    }
+				}
+
+				if (contMenor == Integer.MAX_VALUE) {
+				    // No hay textos
+				    return "No hay Textos en la Biblioteca";
+				} else if (textosMenosSolicitados.size() == 1) {
+				    // Solo hay un texto con la cantidad mínima de reservas
+				    return textosMenosSolicitados.get(0).toString()+" con "+contMenor+" veces solicitado";
+				} else {
+				    return "Hay múltiples textos que nunca fueron pedidos";
+				}
+			}
+
+			private String buscarTextoMasSolicitado() {
+				ArrayList<Texto> textosMayores = new ArrayList<>();
+				int contMayor = 0;
+
+				for (Texto t : listaTextos) {
+				    int contParaCadaTexto = 0;
+				    for (Reserva r : listaReservas) {
+				        if (t.getCodigo() == r.getCodigoObjeto()) {
+				            contParaCadaTexto++;
+				        }
+				    }
+				    if (contParaCadaTexto > contMayor) {
+				        contMayor = contParaCadaTexto;
+				        textosMayores.clear(); 
+				        textosMayores.add(t);
+				    } else if (contParaCadaTexto == contMayor) {
+				        textosMayores.add(t); 
+				    }
+				}
+
+				if (contMayor == 0) {
+				    // No hay textos
+				    return "No hay Textos en la Biblioteca";
+				} else if (textosMayores.size() == 1) {
+				    // Solo hay un texto con la cantidad máxima de reservas
+				    return textosMayores.get(0).toString()+" con "+contMayor+" veces solicitado";
+				} else {
+				    // Hay más de un texto con la misma cantidad máxima de reservas
+				    // Aquí se devuelve un mensaje indicando que hay más de un texto con la misma cantidad de reservas máxima
+				    return "Hay múltiples textos con la misma cantidad máxima de reservas";
+				}
 			}
         	
         });
