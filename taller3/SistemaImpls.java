@@ -19,6 +19,8 @@ public   class SistemaImpls implements Sistema{
 	private JFrame frameListaMorosos;
 	private JFrame frameListaReservasNoDevueltas;
 	private JFrame frameListaReservasDevueltas;
+	private JFrame frameTodosLosLibrosBiblioteca;
+
 
 	//esto es para el pago
 	private boolean pago = false;
@@ -1531,8 +1533,160 @@ public   class SistemaImpls implements Sistema{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				JFrame frame = new JFrame("Revisar Estado Texto");
+		        frame.setSize(400, 300);
+		        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		        frame.setLocationRelativeTo(null);
+		        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
+		        frame.add(panel);
+		        imprimirTodosLosTextosBiblioteca();
+		        placeComponentsEstadoTexto(panel);
+		        frame.setVisible(true);
+			}
+
+			private void imprimirTodosLosTextosBiblioteca() {
+				frameTodosLosLibrosBiblioteca = new JFrame("Lista de Reservas NO Devueltas");
+				frameTodosLosLibrosBiblioteca.setSize(800, 300);
+				frameTodosLosLibrosBiblioteca.setLocationRelativeTo(null);
+				frameTodosLosLibrosBiblioteca.setLocation(0, 0);
+		        // Crear un JTextArea para mostrar la lista
+		        JTextArea textArea = new JTextArea();
+		        textArea.setEditable(false); // Hacer el área de texto no editable
+
+		        // Agregar los elementos del ArrayList al JTextArea
+		        textArea.append("Lista de Reservas NO Devueltas" + "\n");
+
+		        for (Texto t: listaTextos) {
+		            textArea.append(t.toString() + "\n"); // Agregar cada elemento seguido de un salto de línea
+		        }
+		        
+		        // Agregar el JTextArea a un JScrollPane para permitir el desplazamiento si hay muchos elementos
+		        JScrollPane scrollPane = new JScrollPane(textArea);
+
+		        // Agregar el JScrollPane al JFrame
+		        frameTodosLosLibrosBiblioteca.add(scrollPane, BorderLayout.CENTER);
+
+		        // Mostrar la ventana
+		        frameTodosLosLibrosBiblioteca.setVisible(true);
+			}
+
+			private void placeComponentsEstadoTexto(JPanel panel) {
+				panel.setLayout(null);
+		    	
+		    	JLabel mensajeLabel = new JLabel("Ingresar Codigo y Fecha A Revisar");
+		        mensajeLabel.setBounds(70, 20, 800, 25);
+		        panel.add(mensajeLabel);
+		    	
+		    	
+		        JLabel CodigoLabel = new JLabel("Codigo Del Texto: ");
+		        CodigoLabel.setBounds(50, 50, 800, 25);
+		        panel.add(CodigoLabel);
+
+		        JTextField CodigoText = new JTextField(20);
+		        CodigoText.setBounds(200, 50, 165, 25);
+		        panel.add(CodigoText);
+		        
+		        
+		        JLabel fechaLabel = new JLabel("Fecha A Revisar(AAAA/MM/DD): ");
+		        fechaLabel.setBounds(30, 80, 800, 25);
+		        panel.add(fechaLabel);
+
+		        JTextField fechaText = new JTextField(20);
+		        fechaText.setBounds(200, 80, 165, 25);
+		        panel.add(fechaText);
+		        
+		        
+		        JButton button = new JButton("Submit");
+		        button.setBounds(150, 140, 80, 25);
+		        panel.add(button);
+		        
+		        button.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						String codigo= CodigoText.getText();
+		                String fecha = fechaText.getText();
+		                
+		                if(revisarCodigoExiste(codigo)) {
+		    		        frameTodosLosLibrosBiblioteca.setVisible(false);
+		    		        SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+		    		        //ahora hay que revisar si el texto se encuentra disponible 
+		    		        //en la fecha que ingresamos
+		    		        //para ello hay que revisar cada reserva y ver si es del texto
+		    		        //si es del texto revisar las fechas entre las cuales esta reservado
+		    		        //si esta reservado devolver reservado
+		    		        //de lo contrario devolver disponible
+		    		        revisarTextoDisponible(codigo,fecha);
+		    		        
+		    		        
+		    		        
+		                }
+		                
+		                
+					}
+
+					private void revisarTextoDisponible(String codigo, String fecha) {
+						for (Reserva r: listaReservas) {
+							if(r.getCodigoObjeto()==Integer.parseInt(codigo)) {
+								if(revisarFecha(fecha,r.getFechaPedido(),r.getFechaDevolucion())) {
+									//se encuentra entre las fechas
+									//por ende no disponible
+									
+									String mensaje= "Libro No Disponible para Reserva en la fecha Solicitada";
+				                	JOptionPane.showMessageDialog(null, mensaje);
+
+									
+								}
+								else {
+									//no esta entre las fechas
+									//por ende disponible
+									String mensaje= "Libro Disponible para Reserva en la fecha Solicitada";
+				                	JOptionPane.showMessageDialog(null, mensaje);
+
+								}
+							}
+						}
+					}
+
+					private boolean revisarFecha(String fechaARevisar, String fechaPedido, String fechaDevolucion) {
+						String[] partesFechaARevisar = fechaARevisar.split("/");
+					    String[] partesFechaPedido = fechaPedido.split("-");
+					    String[] partesFechaDevolucion = fechaDevolucion.split("-");
+
+					    int añoARevisar = Integer.parseInt(partesFechaARevisar[0]);
+					    int mesARevisar = Integer.parseInt(partesFechaARevisar[1]);
+					    int diaARevisar = Integer.parseInt(partesFechaARevisar[2]);
+
+					    int añoPedido = Integer.parseInt(partesFechaPedido[2]);
+					    int mesPedido = Integer.parseInt(partesFechaPedido[1]);
+					    int diaPedido = Integer.parseInt(partesFechaPedido[0]);
+
+					    int añoDevolucion = Integer.parseInt(partesFechaDevolucion[2]);
+					    int mesDevolucion = Integer.parseInt(partesFechaDevolucion[1]);
+					    int diaDevolucion = Integer.parseInt(partesFechaDevolucion[0]);
+
+					    // Comparación
+					    if ((añoARevisar > añoPedido || (añoARevisar == añoPedido && mesARevisar > mesPedido) ||
+					            (añoARevisar == añoPedido && mesARevisar == mesPedido && diaARevisar >= diaPedido)) &&
+					            (añoARevisar < añoDevolucion || (añoARevisar == añoDevolucion && mesARevisar < mesDevolucion) ||
+					            (añoARevisar == añoDevolucion && mesARevisar == mesDevolucion && diaARevisar <= diaDevolucion))) {
+					        return true; // La fechaARevisar está entre fechaPedido y fechaDevolucion o es igual a alguna de ellas
+					    }
+
+					    return false; // No está entre las fechas
+					}
+
+					private boolean revisarCodigoExiste(String codigo) {
+						for (Texto t: listaTextos) {
+							if(t.getCodigo()==Integer.parseInt(codigo)) {
+								return true;
+							}
+						}						
+						return false;
+					}
+		        	
+		        });
+		        
 			}
         	
         });
