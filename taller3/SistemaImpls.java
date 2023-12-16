@@ -17,7 +17,9 @@ public   class SistemaImpls implements Sistema{
 	//esta es para cerrar las listas de libros que se abren en ciertas ventanas
 	private JFrame frameListaTextos;
 	private JFrame frameListaMorosos;
-	
+	private JFrame frameListaReservasNoDevueltas;
+	private JFrame frameListaReservasDevueltas;
+
 	//esto es para el pago
 	private boolean pago = false;
 
@@ -1429,7 +1431,98 @@ public   class SistemaImpls implements Sistema{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				ArrayList<String> lista = new ArrayList<>();
+
+				imprimirReservasDevueltas(lista);
+				imprimirReservasNoDevueltas(lista);
+				
+			}
+
+			private void imprimirReservasNoDevueltas(ArrayList<String> lista) {
+				ArrayList<Reserva> reservas = listaReservas;
+				ArrayList<Reserva> reservasRepetidas = new ArrayList<>();
+				
+				for (Reserva reserva : listaReservas) {
+					for (Devolucion devolucion : listaDevoluciones) {
+						if (reserva.getCodigoReserva()==devolucion.getCodigoReserva()) {
+							reservasRepetidas.add(reserva);
+						}
+
+					}
+
+				}
+			    reservas.removeAll(reservasRepetidas);
+
+				//hay q probar si funca
+			    //si funca
+			    //estas son las q no se han devuelto
+			    //por ende se imprimen en pantalla
+			    /*
+				for (Reserva reserva : reservas) {
+					System.out.println(reserva);
+				}*/
+			    frameListaReservasNoDevueltas = new JFrame("Lista de Reservas NO Devueltas");
+			    frameListaReservasNoDevueltas.setSize(800, 300);
+			    frameListaReservasNoDevueltas.setLocationRelativeTo(null);
+			    frameListaReservasNoDevueltas.setLocation(0, 0);
+		        // Crear un JTextArea para mostrar la lista
+		        JTextArea textArea = new JTextArea();
+		        textArea.setEditable(false); // Hacer el área de texto no editable
+
+		        // Agregar los elementos del ArrayList al JTextArea
+		        textArea.append("Lista de Reservas NO Devueltas" + "\n");
+
+		        for (Reserva elemento : reservas) {
+		            textArea.append(elemento.toString() + "\n"); // Agregar cada elemento seguido de un salto de línea
+		        }
+		        
+		        // Agregar el JTextArea a un JScrollPane para permitir el desplazamiento si hay muchos elementos
+		        JScrollPane scrollPane = new JScrollPane(textArea);
+
+		        // Agregar el JScrollPane al JFrame
+		        frameListaReservasNoDevueltas.add(scrollPane, BorderLayout.CENTER);
+
+		        // Mostrar la ventana
+		        frameListaReservasNoDevueltas.setVisible(true);
+			    
+				
+			}
+
+			private void imprimirReservasDevueltas(ArrayList<String> lista) {
 				// TODO Auto-generated method stub
+				
+				for (Reserva r: listaReservas) {
+					for (Devolucion devolucion : listaDevoluciones) {
+						if (r.getCodigoReserva()==devolucion.getCodigoReserva()) {
+							lista.add(r.toString());
+						}
+					}
+				}
+				//ya tenemos la lista hay q mostrarla
+				//estas son las que ya se devolvieron
+				frameListaReservasDevueltas = new JFrame("Lista de Reservas Ya Devueltas");
+				frameListaReservasDevueltas.setSize(700, 300);
+				frameListaReservasDevueltas.setLocationRelativeTo(null);
+				frameListaReservasDevueltas.setLocation(800, 0); // A la derecha
+
+		        // Crear un JTextArea para mostrar la lista
+		        JTextArea textArea = new JTextArea();
+		        textArea.setEditable(false); // Hacer el área de texto no editable
+
+		        // Agregar los elementos del ArrayList al JTextArea
+		        textArea.append("Lista de Reservas Ya Devueltas" + "\n");
+		        for (String elemento : lista) {
+		            textArea.append(elemento.toString() + "\n"); // Agregar cada elemento seguido de un salto de línea
+		        }
+		        
+		        // Agregar el JTextArea a un JScrollPane para permitir el desplazamiento si hay muchos elementos
+		        JScrollPane scrollPane = new JScrollPane(textArea);
+
+		        // Agregar el JScrollPane al JFrame
+		        frameListaReservasDevueltas.add(scrollPane, BorderLayout.CENTER);
+
+		        // Mostrar la ventana
+		        frameListaReservasDevueltas.setVisible(true);
 				
 			}
         	

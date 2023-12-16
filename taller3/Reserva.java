@@ -40,5 +40,10 @@ public class Reserva {
 	public void setFechaDevolucion(String fechaDevolucion) {
 		this.fechaDevolucion = fechaDevolucion;
 	}
+	@Override
+	public String toString() {
+		return "Reserva [codigoReserva=" + codigoReserva + ", codigoObjeto=" + codigoObjeto + ", rut=" + rut
+				+ ", fechaPedido=" + fechaPedido + ", fechaDevolucion=" + fechaDevolucion + "]";
+	}
 	
 }
