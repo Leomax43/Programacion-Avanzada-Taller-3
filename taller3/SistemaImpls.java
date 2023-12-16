@@ -1159,7 +1159,269 @@ public   class SistemaImpls implements Sistema{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				JFrame frameDevolver = new JFrame("Menu Devolver Texto");
+				frameDevolver.setSize(400, 300);
+				frameDevolver.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				frameDevolver.setLocationRelativeTo(null);
+		        JPanel panelDevolver = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
+		        frameDevolver.add(panelDevolver);
+		        placeComponentsDevolverTexto(panelDevolver,rut,fecha);
+		        frameDevolver.setVisible(true);
+			}
+
+			private void placeComponentsDevolverTexto(JPanel panelDevolver, String rut, String fecha) {
+				panelDevolver.setLayout(null);
+		    	
+		    	JLabel mensajeLabel = new JLabel("Ingresar Rut Cliente");
+		        mensajeLabel.setBounds(100, 20, 800, 25);
+		        panelDevolver.add(mensajeLabel);
+		    	
+		    	
+		        JLabel rutLabel = new JLabel("Rut De La Persona Que Desea Devolver: ");
+		        rutLabel.setBounds(50, 50, 800, 25);
+		        panelDevolver.add(rutLabel);
+
+		        JTextField rutText = new JTextField(20);
+		        rutText.setBounds(70, 80, 165, 25);
+		        panelDevolver.add(rutText);
+		        
+		        JButton button = new JButton("Submit");
+		        button.setBounds(150, 110, 80, 25);
+		        panelDevolver.add(button);
+		        
+		        button.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						String rutTexto = rutText.getText();
+						if (personaExiste(rutTexto)) {
+							Usuario u = buscarPersonaRut(rutTexto);
+							ArrayList<Texto> listaReservados=u.getListaLibrosReservados();
+							boolean VoF = mostrarLibrosReservados(listaReservados);
+							if (VoF) {
+								SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+								JFrame frameDevolucion = new JFrame("Menu Devolucion");
+								frameDevolucion.setSize(400, 300);
+								frameDevolucion.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+								frameDevolucion.setLocationRelativeTo(null);
+			            		JPanel panelDevolucion = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
+			            		frameDevolucion.add(panelDevolucion);
+			            		placeComponentsDevolucionTrabajador(panelDevolucion,fecha,listaReservados,rutTexto);
+			            		frameDevolucion.setVisible(true);
+							}
+							else {
+								//no tiene libros
+								
+							}
+							
+							
+						}
+						else {
+							//ingreso mal el rut
+						}
+					}
+
+					private void placeComponentsDevolucionTrabajador(JPanel panel, String fecha,
+							ArrayList<Texto> listaReservados, String rutTexto) {
+						panel.setLayout(null);
+				    	
+				    	JLabel mensajeLabel = new JLabel("Ingresar Codigo del Texto que quiera Devolver");
+				        mensajeLabel.setBounds(70, 20, 800, 25);
+				        panel.add(mensajeLabel);
+				    	
+				    	
+				        JLabel CodigoLabel = new JLabel("Codigo: ");
+				        CodigoLabel.setBounds(100, 50, 80, 25);
+				        panel.add(CodigoLabel);
+
+				        JTextField CodigoText = new JTextField(20);
+				        CodigoText.setBounds(200, 50, 165, 25);
+				        panel.add(CodigoText);
+				        
+				        JButton button = new JButton("Submit");
+				        button.setBounds(200, 140, 80, 25);
+				        panel.add(button);
+				        
+				        
+				        // Acción al presionar el botón
+				        button.addActionListener(new ActionListener() {
+
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								String codigo = CodigoText.getText();
+								boolean revisarCodigo = revisarCodigo(codigo,rutTexto);
+								System.out.println("aaaaah");
+								if (revisarCodigo) {
+									//llegamos hasta el texto en cuestion dentro de la lista
+									//ahora hay q revisar si esta dentro del plazo
+									String fechaDevolucion="";
+									int codigoReserva=0;
+									String devolucionOriginal="";
+									for (Reserva r: listaReservas) {
+										if (r.getCodigoObjeto()==Integer.parseInt(codigo)) {
+											fechaDevolucion = r.getFechaDevolucion();
+											codigoReserva=r.getCodigoReserva();
+											devolucionOriginal=r.getFechaDevolucion();
+										}
+									}
+									boolean revisarFechaCorrecta = revisarFecha(fecha,fechaDevolucion);
+									if (revisarFechaCorrecta) {
+										//el libro se entrego a tiempo
+										//por ende se elimina de manera normal
+										//se agrega al txt de devoluciones con un "pagado"
+										int contDevoluciones = contDevoluciones();
+										Devolucion d = new Devolucion(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pagado");
+										eliminarLibroListaPersonal(rutTexto,codigo);
+										frameListaTextos.dispose();
+										SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+										String mensaje= "Libro Devuelto Correctamente";
+						        		JOptionPane.showMessageDialog(null, mensaje);
+						        		
+									}
+									else {
+										//el libro se retraso
+										//por ende el usuario no puede entregarlo directamente
+										//debe entregarlo un Trabajador
+										//se agrega al txt de devoluciones con un pendiente
+										String mensaje= "Advertencia Libro Devuelto Con Deuda";
+						        		JOptionPane.showMessageDialog(null, mensaje);
+						        		
+										int contDevoluciones = contDevoluciones();
+										Devolucion d = new Devolucion(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pendiente");
+										eliminarLibroListaPersonal(rutTexto,codigo);
+										frameListaTextos.dispose();
+										SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+						        		
+						        		/* de todos modos se usaria algo como esto
+										int contDevoluciones = contDevoluciones();
+										Devolucion d = new Devolucion(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pendiente");
+										*/
+
+									}
+								}
+							}
+
+							private void eliminarLibroListaPersonal(String rutTexto, String codigo) {
+								for (Persona p: listaPersonas) {
+									if (p instanceof Usuario && p.getRut().equals(rutTexto) && p.getTipoPersona().equals("Usuario")) {
+										Texto t =null;
+										for (Texto texto: listaTextos) {
+											if(texto.getCodigo()==Integer.parseInt(codigo)) {
+												t = texto;
+											}
+										}
+										
+										((Usuario) p).eliminarLibro(t);
+									}
+								}
+							}
+
+							private int contDevoluciones() {
+								int cont=0;
+								for (Devolucion d: listaDevoluciones) {
+									cont++;
+								}
+								cont+=1000000;
+								return cont;
+							}
+
+							private boolean revisarFecha(String fecha, String fechaDevolucion) {
+								String[] partesFechaActual = fecha.split("/");
+								String[] partesFechaReserva =fechaDevolucion.split("-");
+								
+								int anioPedido = Integer.parseInt(partesFechaActual[0]);
+					            int mesPedido = Integer.parseInt(partesFechaActual[1]);
+					            int diaPedido = Integer.parseInt(partesFechaActual[2]);
+
+					            int anioEntrega = Integer.parseInt(partesFechaReserva[2]);
+					            int mesEntrega = Integer.parseInt(partesFechaReserva[1]);
+					            int diaEntrega = Integer.parseInt(partesFechaReserva[0]);
+
+					            // Comparación de fechas
+					            if (anioPedido < anioEntrega || 
+					                (anioPedido == anioEntrega && mesPedido < mesEntrega) || 
+					                (anioPedido == anioEntrega && mesPedido == mesEntrega && diaPedido <= diaEntrega)) {
+					                return true; // O realiza alguna acción si se cumple la condición
+					            }
+								
+								return false;
+							}
+
+							private boolean revisarCodigo(String codigo, String rutTexto) {
+								for (Persona p : listaPersonas) {
+									if (p instanceof Usuario && p.getRut().equals(rutTexto) && p.getTipoPersona().equals("Usuario")) {
+										ArrayList<Texto> minilista =((Usuario) p).getListaLibrosReservados();
+										for (Texto texto : minilista) {
+											if (Integer.parseInt(codigo)==texto.getCodigo()) {
+												return true;
+											}
+											
+											
+										}
+									}
+								}
+								return false;
+							}
+				        });
+					}
+
+					private boolean mostrarLibrosReservados(ArrayList<Texto> listaReservados) {
+						frameListaTextos = new JFrame("Lista De textos Disponibles");
+						frameListaTextos.setSize(800, 300);
+						frameListaTextos.setLocationRelativeTo(null);
+				        //ola
+				        
+				        
+				        //alo
+				        
+				        if (listaReservados.size()==0) {
+				        	String mensaje= "Usted no Posee Libros en Reserva";
+			        		JOptionPane.showMessageDialog(null, mensaje);
+			        		return false;
+				        }
+				        else {
+				        	// Crear un JTextArea para mostrar la lista
+				        	JTextArea textArea = new JTextArea();
+				        	textArea.setEditable(false); // Hacer el área de texto no editable
+
+				        	// Agregar los elementos del ArrayList al JTextArea
+				        
+				        	for (Texto elemento : listaReservados) {
+				        		textArea.append(elemento + "\n"); // Agregar cada elemento seguido de un salto de línea
+				        	}
+				        
+				        	// Agregar el JTextArea a un JScrollPane para permitir el desplazamiento si hay muchos elementos
+				        	JScrollPane scrollPane = new JScrollPane(textArea);
+
+				        	// Agregar el JScrollPane al JFrame
+				        	frameListaTextos.add(scrollPane, BorderLayout.CENTER);
+
+				        	// Mostrar la ventana
+				        	frameListaTextos.setVisible(true);
+				        	return true;
+				        }
+					}
+
+					private Usuario buscarPersonaRut(String rutTexto) {
+						for (Persona p: listaPersonas) {
+							if (p instanceof Usuario && p.getRut().equals(rutTexto) && p.getTipoPersona().equals("Usuario")) {
+								return ((Usuario) p);
+							}
+						}
+						return null;
+					}
+					private boolean personaExiste(String rutTexto) {
+						for (Persona p: listaPersonas) {
+							if (p instanceof Usuario && p.getRut().equals(rutTexto) && p.getTipoPersona().equals("Usuario")) {
+								return true;
+							}
+
+						}						
+						return false;
+					}
+		        	
+		        	
+		        });
 			}
         	
         });
