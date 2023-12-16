@@ -17,7 +17,7 @@ public   class SistemaImpls implements Sistema{
 	//esta es para cerrar las listas de libros que se abren en ciertas ventanas
 	private JFrame frameListaTextos;
 	private JFrame frameListaMorosos;
-
+	
 	//esto es para el pago
 	private boolean pago = false;
 
@@ -286,15 +286,15 @@ public   class SistemaImpls implements Sistema{
 				}
                 if(revisarDatosCorrectos && !fecha.isBlank()) {
 					SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
-                	String nombre = buscarNombreConRut(rut);
-                	String mensajeBienvenida = "¡Bienvenido Usuario: "+nombre+ " con RUT: " + rut + "!";
-                	JOptionPane.showMessageDialog(null, mensajeBienvenida);
                 	//aca se prosigue con lo q se deba hacer
                 	//comandos para los clientes y/o trabajadores
                 	//menuCliente();
                 	//menuTrabajador();
                 	String a = getTipoPersona(rut);
                 	if (a.equals("Usuario")) {
+                		String nombre = buscarNombreConRut(rut);
+                		String mensajeBienvenida = "¡Bienvenido Usuario: "+nombre+ " con RUT: " + rut + "!";
+                		JOptionPane.showMessageDialog(null, mensajeBienvenida);
                 		
                 		/*
                 		 * 
@@ -308,14 +308,16 @@ public   class SistemaImpls implements Sistema{
                 		
                 	}
                 	else if(a.equals("Trabajador")){
-                		
+                		String nombre = buscarNombreConRut(rut);
+                		String mensajeBienvenida = "¡Bienvenido Trabajador: "+nombre+ " con RUT: " + rut + "!";
+                		JOptionPane.showMessageDialog(null, mensajeBienvenida);
                 		/*
                 		 * 
                 		 * advertencia
                 		 * AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
                 		 */
                 		Sistema s = SistemaImpls.getInstancia();
-                		s.menuTrabajador();
+                		s.menuTrabajador(rut,fecha);
                 		
                 	}
                 	else {
@@ -542,13 +544,655 @@ public   class SistemaImpls implements Sistema{
 
 
 
+	
+
 	@Override
-	public void menuTrabajador() {
+	public void menuTrabajador(String rut, String fecha) {
+		// TODO Auto-generated method stub
 		System.out.println("yo trabajo");
+		JFrame frame = new JFrame("Menu Ingreso");
+        frame.setSize(400, 300);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
+        frame.add(panel);
+        placeComponentsTrabajador(panel,rut,fecha);
+        frame.setVisible(true);
 	}
 
+	
 
+	private void placeComponentsTrabajador(JPanel panel, String rut, String fecha) {
+		JButton buttonIngresarTexto = new JButton("Ingresar Nuevo Texto");
+		buttonIngresarTexto.setBounds(10, 10, 80, 25);
+        panel.add(buttonIngresarTexto);
+        
+        JButton buttonIngresarReserva = new JButton("Ingresar Reseva");
+        buttonIngresarReserva.setBounds(100, 10, 80, 25);
+        panel.add(buttonIngresarReserva);
+        
+        JButton buttonDevolver = new JButton("Devolver Texto");
+        buttonDevolver.setBounds(10, 40, 80, 25);
+        panel.add(buttonDevolver);
+        
+        JButton buttonVerRegistros = new JButton("Ver Registros de Reservas");
+        buttonVerRegistros.setBounds(100, 40, 80, 25);
+        panel.add(buttonVerRegistros);
+        
+        
+        JButton buttonRevisarTexto = new JButton("Revisar Estado Texto");
+        buttonRevisarTexto.setBounds(100, 40, 80, 25);
+        panel.add(buttonRevisarTexto);
+        
+        JButton buttonEstadisticas = new JButton("Estadisticas");
+        buttonEstadisticas.setBounds(100, 40, 80, 25);
+        panel.add(buttonEstadisticas);
+        
+        buttonIngresarTexto.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				JFrame frame = new JFrame("Menu Ingreso");
+            	frame.setSize(500, 300);
+            	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            	frame.setLocationRelativeTo(null);
+            	JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
+            	frame.add(panel);
+            	placeComponentsIngresarTexto(panel,fecha,rut);
+            	frame.setVisible(true);
+				
+				
+			}
+
+			private void placeComponentsIngresarTexto(JPanel panel, String fecha, String rut) {
+				panel.setLayout(null);
+		    	
+		    	JLabel mensajeLabel = new JLabel("Ingresar Datos Del Texto");
+		        mensajeLabel.setBounds(100, 20, 800, 25);
+		        panel.add(mensajeLabel);
+		    	
+		    	
+		        JLabel anoLabel = new JLabel("Año: ");
+		        anoLabel.setBounds(100, 50, 80, 25);
+		        panel.add(anoLabel);
+
+		        JTextField anoText = new JTextField(20);
+		        anoText.setBounds(250, 50, 165, 25);
+		        panel.add(anoText);
+		        
+		        JLabel autorLabel = new JLabel("Nombre Autor: ");
+		        autorLabel.setBounds(80, 80, 808, 25);
+		        panel.add(autorLabel);
+
+		        JTextField autorText = new JTextField(20);
+		        autorText.setBounds(250, 80, 165, 25);
+		        panel.add(autorText);
+		        
+		        JLabel nombreTextoLabel = new JLabel("Nombre Texto: ");
+		        nombreTextoLabel.setBounds(80, 110, 808, 25);
+		        panel.add(nombreTextoLabel);
+		        
+		        JTextField nombreTextoText = new JTextField(20);
+		        nombreTextoText.setBounds(250, 110, 165, 25);
+		        panel.add(nombreTextoText);
+		        
+		        JLabel tipoTextoLabel = new JLabel("Tipo Texto(Libro,Comic,Apunte,Paper): ");
+		        tipoTextoLabel.setBounds(10, 140, 808, 25);
+		        panel.add(tipoTextoLabel);
+		        
+		        JTextField tipoTextoText = new JTextField(20);
+		        tipoTextoText.setBounds(250, 140, 165, 25);
+		        panel.add(tipoTextoText);
+		        
+		        JButton button = new JButton("Submit");
+		        button.setBounds(250, 170, 80, 25);
+		        panel.add(button);
+		        
+		        button.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+						Random r = new Random();
+						String anoTexto = anoText.getText();
+						int codigo = r.nextInt(999999);
+						String autorTexto = autorText.getText();
+						String nombreTexto = nombreTextoText.getText();
+						String tipoTexto = tipoTextoText.getText();
+		                
+						
+						switch (tipoTexto.toLowerCase()) {
+							case ("libro"):
+								JFrame frameLibro = new JFrame("Ingreso Libro");
+								frameLibro.setSize(500, 300);
+								frameLibro.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+								frameLibro.setLocationRelativeTo(null);
+			            		JPanel panelLibro = new JPanel();
+			            		frameLibro.add(panelLibro);
+			            		placeComponentsIngresarLibro(panelLibro,Integer.parseInt(anoTexto),codigo,autorTexto,nombreTexto,tipoTexto);
+			            		frameLibro.setVisible(true);
+			            		break;
+								
+							case ("comic"):
+								JFrame frameComic = new JFrame("Ingreso Comic");
+								frameComic.setSize(500, 300);
+								frameComic.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+								frameComic.setLocationRelativeTo(null);
+		            			JPanel panelComic = new JPanel();
+		            			frameComic.add(panelComic);
+		            			placeComponentsIngresarComic(panelComic,Integer.parseInt(anoTexto),codigo,autorTexto,nombreTexto,tipoTexto);
+		            			frameComic.setVisible(true);
+			            		break;
+
+		            		
+							case ("apunte"):
+								JFrame frameApunte = new JFrame("Ingreso Apunte");
+								frameApunte.setSize(500, 300);
+								frameApunte.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+								frameApunte.setLocationRelativeTo(null);
+								JPanel panelApunte = new JPanel();
+								frameApunte.add(panelApunte);
+								placeComponentsIngresarApunte(panelApunte,Integer.parseInt(anoTexto),codigo,autorTexto,nombreTexto,tipoTexto);
+								frameApunte.setVisible(true);
+								break;
+
+								
+							case ("paper"):
+								JFrame framePaper = new JFrame("Ingreso Paper");
+								framePaper.setSize(500, 300);
+								framePaper.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+								framePaper.setLocationRelativeTo(null);
+								JPanel panelPaper = new JPanel();
+								framePaper.add(panelPaper);
+								placeComponentsIngresarPaper(panelPaper,Integer.parseInt(anoTexto),codigo,autorTexto,nombreTexto,tipoTexto);
+								framePaper.setVisible(true);
+								break;
+
+							default:
+						        // Código que se ejecuta si opcion no coincide con ningún case
+								String mensaje= "Ingrese Correctamente los datos";
+		                		JOptionPane.showMessageDialog(null, mensaje);
+		                		break;
+						}
+					}
+
+					private void placeComponentsIngresarPaper(JPanel panelPaper, int anoTexto, int codigo,
+							String autorTexto, String nombreTexto, String tipoTexto) {
+						panelPaper.setLayout(null);
+				    	
+				    	JLabel mensajeLabel = new JLabel("Ingresar Datos Del Paper");
+				        mensajeLabel.setBounds(100, 20, 800, 25);
+				        panelPaper.add(mensajeLabel);
+				    	
+				    	
+				        JLabel asignaturaLabel = new JLabel("Area Investigacion: ");
+				        asignaturaLabel.setBounds(80, 50, 800, 25);
+				        panelPaper.add(asignaturaLabel);
+
+				        JTextField asignaturaText = new JTextField(20);
+				        asignaturaText.setBounds(250, 50, 165, 25);
+				        panelPaper.add(asignaturaText);
+				        
+				        JLabel carreraLabel = new JLabel("DOI123456789(solo numeros): ");
+				        carreraLabel.setBounds(30, 80, 808, 25);
+				        panelPaper.add(carreraLabel);
+
+				        JTextField carreraText = new JTextField(20);
+				        carreraText.setBounds(250, 80, 165, 25);
+				        panelPaper.add(carreraText);
+				        
+				        
+				        JButton button = new JButton("Submit");
+				        button.setBounds(200, 110, 80, 25);
+				        panelPaper.add(button);
+				        
+				        button.addActionListener(new ActionListener() {
+
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								String areaInvestigacion = asignaturaText.getText();
+								String d ="DOI";
+								String doi= carreraText.getText();
+								d+=doi;
+								Paper p = new Paper(anoTexto,codigo,autorTexto,nombreTexto,"Paper",areaInvestigacion,doi);
+								listaTextos.add(p);
+								
+								String mensaje= "Paper Agregado Correctamente";
+			                	JOptionPane.showMessageDialog(null, mensaje);
+			                	
+								SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+								//se modifica el txt
+								//se repite lo mismo con todo lo demas
+								
+								for (Texto t: listaTextos) {
+									System.out.println(t);
+								}
+								
+							}
+				        	
+				        });
+					}
+
+					private void placeComponentsIngresarApunte(JPanel panelApunte, int anoTexto, int codigo,
+							String autorTexto, String nombreTexto, String tipoTexto) {
+						panelApunte.setLayout(null);
+				    	
+				    	JLabel mensajeLabel = new JLabel("Ingresar Datos Del Apunte");
+				        mensajeLabel.setBounds(100, 20, 800, 25);
+				        panelApunte.add(mensajeLabel);
+				    	
+				    	
+				        JLabel asignaturaLabel = new JLabel("Asignatura Asociada: ");
+				        asignaturaLabel.setBounds(80, 50, 800, 25);
+				        panelApunte.add(asignaturaLabel);
+
+				        JTextField asignaturaText = new JTextField(20);
+				        asignaturaText.setBounds(250, 50, 165, 25);
+				        panelApunte.add(asignaturaText);
+				        
+				        JLabel carreraLabel = new JLabel("Carrera: ");
+				        carreraLabel.setBounds(80, 80, 808, 25);
+				        panelApunte.add(carreraLabel);
+
+				        JTextField carreraText = new JTextField(20);
+				        carreraText.setBounds(250, 80, 165, 25);
+				        panelApunte.add(carreraText);
+				        
+				        
+				        JButton button = new JButton("Submit");
+				        button.setBounds(200, 110, 80, 25);
+				        panelApunte.add(button);
+				        
+				        button.addActionListener(new ActionListener() {
+
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								String asignatura = asignaturaText.getText();
+								String carrera= carreraText.getText();
+								
+								Apunte a = new Apunte(anoTexto,codigo,autorTexto,nombreTexto,"Apunte",asignatura,carrera);
+								listaTextos.add(a);
+								
+								String mensaje= "Apunte Agregado Correctamente";
+			                	JOptionPane.showMessageDialog(null, mensaje);
+			                	
+								SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+								//se modifica el txt
+								//se repite lo mismo con todo lo demas
+								
+								for (Texto t: listaTextos) {
+									System.out.println(t);
+								}
+							}
+				        	
+				        });
+					}
+
+					private void placeComponentsIngresarComic(JPanel panelComic, int anoTexto, int codigo,
+							String autorTexto, String nombreTexto, String tipoTexto) {
+						
+						panelComic.setLayout(null);
+				    	
+				    	JLabel mensajeLabel = new JLabel("Ingresar Datos Del Comic");
+				        mensajeLabel.setBounds(100, 20, 800, 25);
+				        panelComic.add(mensajeLabel);
+				    	
+				    	
+				        JLabel companiaLabel = new JLabel("Compañia Editorial: ");
+				        companiaLabel.setBounds(80, 50, 800, 25);
+				        panelComic.add(companiaLabel);
+
+				        JTextField companiaText = new JTextField(20);
+				        companiaText.setBounds(250, 50, 165, 25);
+				        panelComic.add(companiaText);
+				        
+				        JLabel generoLabel = new JLabel("Genero: ");
+				        generoLabel.setBounds(80, 80, 808, 25);
+				        panelComic.add(generoLabel);
+
+				        JTextField generoText = new JTextField(20);
+				        generoText.setBounds(250, 80, 165, 25);
+				        panelComic.add(generoText);
+				        
+				        JLabel numeroSerieLabel = new JLabel("Numero De Serie: ");
+				        numeroSerieLabel.setBounds(80, 110, 808, 25);
+				        panelComic.add(numeroSerieLabel);
+
+				        JTextField numeroSerieText = new JTextField(20);
+				        numeroSerieText.setBounds(250, 110, 165, 25);
+				        panelComic.add(numeroSerieText);
+				        
+				        JButton button = new JButton("Submit");
+				        button.setBounds(250, 140, 80, 25);
+				        panelComic.add(button);
+				        
+				        button.addActionListener(new ActionListener() {
+
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								String compania= companiaText.getText();
+								String genero = generoText.getText();
+								String numeroSerie= numeroSerieText.getText();
+								
+								Comic c = new Comic(anoTexto,codigo,autorTexto,nombreTexto,"Comic",compania,genero,numeroSerie);
+								listaTextos.add(c);
+								//se modifica el txt
+								
+								String mensaje= "Comic Agregado Correctamente";
+			                	JOptionPane.showMessageDialog(null, mensaje);
+			                	
+								SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+								//se modifica el txt
+								//se repite lo mismo con todo lo demas
+								
+								for (Texto t: listaTextos) {
+									System.out.println(t);
+								}
+							}
+				        	
+				        });
+				        
+					}
+
+					private void placeComponentsIngresarLibro(JPanel panel, int anoTexto, int codigo, String autorTexto,
+							String nombreTexto, String tipoTexto) {
+						
+							panel.setLayout(null);
+
+							JLabel mensajeLabel = new JLabel("Ingresar Datos Del Libro");
+					        mensajeLabel.setBounds(180, 20, 450, 25);
+					        panel.add(mensajeLabel);
+					    	
+					    	
+					        JLabel editorialLabel = new JLabel("Editorial: ");
+					        editorialLabel.setBounds(70, 20, 80, 80);
+					        panel.add(editorialLabel);
+
+					        JTextField editorialText = new JTextField(20);
+					        editorialText.setBounds(250, 50, 165, 25);
+					        panel.add(editorialText);
+					        
+					        JLabel generoLiterarioLabel = new JLabel("Genero Literario: ");
+					        generoLiterarioLabel.setBounds(70, 90, 165, 25);
+					        panel.add(generoLiterarioLabel);
+
+					        JTextField generoLiterarioText = new JTextField(20);
+					        generoLiterarioText.setBounds(250, 90, 165, 25);
+					        panel.add(generoLiterarioText);
+					        
+					        JLabel edicionLabel = new JLabel("Edicion: ");
+					        edicionLabel.setBounds(70, 130, 808, 25);
+					        panel.add(edicionLabel);
+					        
+					        JTextField edicionText = new JTextField(20);
+					        edicionText.setBounds(250, 130, 165, 25);
+					        panel.add(edicionText);
+					        
+					        JButton button = new JButton("Submit");
+					        button.setBounds(250, 170, 80, 25);
+					        panel.add(button);
+					        
+					        button.addActionListener(new ActionListener() {
+					        	
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									String editorial= editorialText.getText();
+									String generoLiterario = generoLiterarioText.getText();
+									String edicion= edicionText.getText();
+									
+									Libro l = new Libro(anoTexto,codigo,autorTexto,nombreTexto,"Libro",editorial,generoLiterario,edicion);
+									listaTextos.add(l);
+									
+									String mensaje= "Libro Agregado Correctamente";
+				                	JOptionPane.showMessageDialog(null, mensaje);
+				                	
+									SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+									//se modifica el txt
+									//se repite lo mismo con todo lo demas
+									
+									for (Texto t: listaTextos) {
+										System.out.println(t);
+									}
+									
+								}
+					        	
+					        });
+												
+					}
+
+					
+		        	
+		        });
+		        
+			}
+        	
+        });
+        buttonIngresarReserva.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFrame frame = new JFrame("Menu Ingreso");
+            	frame.setSize(500, 300);
+            	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            	frame.setLocationRelativeTo(null);
+            	mostrarLibrosDisponibles();
+            	JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
+            	frame.add(panel);
+            	placeComponentsReservar(panel,fecha,rut);
+            	frame.setVisible(true);
+			}
+
+			private ArrayList<Texto> mostrarLibrosDisponibles() {
+				ArrayList<Texto> listaLibrosDisponibles = new ArrayList<>();
+				
+				//cont para revisar si alguna vez fue pedido el libro
+				int contPeticion=0;
+				
+				
+				for (Texto texto : listaTextos) {
+					for (Reserva r: listaReservas) {
+						
+						//se revisa si el libro fue alguna vez reservado
+						if (texto.getCodigo()==r.getCodigoObjeto()) {
+							//si entra aca es pq fue reservado
+							//ahora hay q revisar si lo devolvieron
+							contPeticion++;
+							for (Devolucion d: listaDevoluciones) {
+								if (d.getCodigoReserva()==r.getCodigoReserva()) {
+									//se pidio el libro y se devolvio
+									listaLibrosDisponibles.add(texto);
+								}
+								
+							}
+							
+						}
+					}
+					if(contPeticion==0) {
+						//si entra aca es pq nunca lo reservaron antes
+						listaLibrosDisponibles.add(texto);
+					}
+					contPeticion=0;
+				}
+				
+				
+				// Crear una nueva ventana (JFrame)
+
+		        frameListaTextos = new JFrame("Lista De textos Disponibles");
+		        frameListaTextos.setSize(800, 300);
+		        frameListaTextos.setLocationRelativeTo(null);
+
+		        // Crear un JTextArea para mostrar la lista
+		        JTextArea textArea = new JTextArea();
+		        textArea.setEditable(false); // Hacer el área de texto no editable
+
+		        // Agregar los elementos del ArrayList al JTextArea
+		        
+		        for (Texto elemento : listaLibrosDisponibles) {
+		            textArea.append(elemento + "\n"); // Agregar cada elemento seguido de un salto de línea
+		        }
+		        
+		        // Agregar el JTextArea a un JScrollPane para permitir el desplazamiento si hay muchos elementos
+		        JScrollPane scrollPane = new JScrollPane(textArea);
+
+		        // Agregar el JScrollPane al JFrame
+		        frameListaTextos.add(scrollPane, BorderLayout.CENTER);
+
+		        // Mostrar la ventana
+		        frameListaTextos.setVisible(true);
+		        return listaLibrosDisponibles;				
+			}
+
+			private void placeComponentsReservar(JPanel panel, String fecha, String rut) {
+				panel.setLayout(null);
+		    	
+		    	JLabel mensajeLabel = new JLabel("Ingresar Datos De La Reserva");
+		        mensajeLabel.setBounds(100, 20, 800, 25);
+		        panel.add(mensajeLabel);
+		    	
+		    	
+		        JLabel rutLabel = new JLabel("Rut Que Desea Reservar: ");
+		        rutLabel.setBounds(30, 50, 800, 25);
+		        panel.add(rutLabel);
+
+		        JTextField rutText = new JTextField(20);
+		        rutText.setBounds(250, 50, 165, 25);
+		        panel.add(rutText);
+		        
+		        JLabel codigoLabel = new JLabel("Codigo Del Texto: ");
+		        codigoLabel.setBounds(80, 80, 808, 25);
+		        panel.add(codigoLabel);
+
+		        JTextField codigoText = new JTextField(20);
+		        codigoText.setBounds(250, 80, 165, 25);
+		        panel.add(codigoText);
+		        
+		        JLabel fechaRetiroLabel = new JLabel("Fecha Retiro(DD-MM-AAAA): ");
+		        fechaRetiroLabel.setBounds(80, 110, 808, 25);
+		        panel.add(fechaRetiroLabel);
+		        
+		        JTextField fechaRetiroText = new JTextField(20);
+		        fechaRetiroText.setBounds(250, 110, 165, 25);
+		        panel.add(fechaRetiroText);
+		        
+		        JLabel fechaEntregaLabel = new JLabel("Fecha Entrega(DD-MM-AAAA): ");
+		        fechaEntregaLabel.setBounds(80, 140, 808, 25);
+		        panel.add(fechaEntregaLabel);
+		        
+		        JTextField fechaEntregaText = new JTextField(20);
+		        fechaEntregaText.setBounds(250, 140, 165, 25);
+		        panel.add(fechaEntregaText);
+		        
+		        JButton button = new JButton("Submit");
+		        button.setBounds(250, 170, 80, 25);
+		        panel.add(button);
+		        
+		        button.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						
+						int codigo = contadorReservas();
+						String rutTexto = rutText.getText();
+						String codigoTexto = codigoText.getText();
+						String fechaRetiro = fechaRetiroText.getText();
+						String fechaEntrega = fechaEntregaText.getText();
+						
+						if(buscarCodigoTexto(codigoTexto) && buscarRutExiste(rutTexto)) {
+							Reserva r = new Reserva(codigo,rutTexto,Integer.parseInt(codigoTexto),fechaRetiro,fechaEntrega);
+							listaReservas.add(r);
+							//se agrega al txt
+							String mensaje= "Reserva Agregada Correctamente";
+		                	JOptionPane.showMessageDialog(null, mensaje);
+		                	
+		                	//ademas hay q modificar la lista de libros disponibles
+		                	
+							SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+					        frameListaTextos.setVisible(false);
+					        
+							
+						}
+						else {
+							String mensaje= "Datos Incorrectos";
+		                	JOptionPane.showMessageDialog(null, mensaje);
+							SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+					        frameListaTextos.setVisible(false);
+
+						}
+						
+					}
+
+					private boolean buscarRutExiste(String rutTexto) {
+						for (Persona p: listaPersonas) {
+							if (p instanceof Usuario && p.getRut().equals(rutTexto) && p.getTipoPersona().equals("Usuario")) {
+								//se revisa que no tenga mas de 2 libros para poder reservar el 3ro
+								int cont = ((Usuario) p).getListaLibrosReservados().size();
+								if (cont<=2) return true;
+							}
+						}
+						return false;
+					}
+
+					private boolean buscarCodigoTexto(String codigoTexto) {
+						for (Texto t: listaTextos) {
+							if (t.getCodigo()==Integer.parseInt(codigoTexto)) {
+								return true;
+							}
+						}
+						return false;
+					}
+
+					private int contadorReservas() {
+						int cont=0;
+						for (Reserva r : listaReservas) {
+							cont++;
+						}
+						cont+=100000;
+						return cont;
+					}
+		        	
+		        });
+			}
+        	
+        });
+        buttonDevolver.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+        	
+        });
+        buttonVerRegistros.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+        	
+        });
+        buttonRevisarTexto.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+        	
+        });
+        buttonEstadisticas.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+        	
+        });
+        
+        
+	}
 	
 
 	@Override
@@ -1486,6 +2130,7 @@ public   class SistemaImpls implements Sistema{
         
 	}
 
+	
 	
 	
 	

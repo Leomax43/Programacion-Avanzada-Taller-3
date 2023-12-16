@@ -7,7 +7,7 @@ public interface Sistema {
 	void ingresarRegistrarse();
 	void Interfaz();
 	void registroCliente();
-	void menuTrabajador();
+	void menuTrabajador(String rut, String fecha);
 	
 	//se puede hacer esto???
 	void menuCliente(String rut, String fecha);

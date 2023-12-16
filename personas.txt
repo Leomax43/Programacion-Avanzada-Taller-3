@@ -1,4 +1,4 @@
 Juan Pérez,1,c,Usuario
 María González,2,c,Usuario
 Pedro Ramirez,87654321-0,c,Usuario
-Ana Soto,2,c,Trabajador
+Ana Soto,3,c,Trabajador
