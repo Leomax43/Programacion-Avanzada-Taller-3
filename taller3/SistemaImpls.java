@@ -694,6 +694,7 @@ public   class SistemaImpls implements Sistema{
 			            		JPanel panelLibro = new JPanel();
 			            		frameLibro.add(panelLibro);
 			            		placeComponentsIngresarLibro(panelLibro,Integer.parseInt(anoTexto),codigo,autorTexto,nombreTexto,tipoTexto);
+			            		
 			            		frameLibro.setVisible(true);
 			            		break;
 								
@@ -780,7 +781,7 @@ public   class SistemaImpls implements Sistema{
 								d+=doi;
 								Paper p = new Paper(anoTexto,codigo,autorTexto,nombreTexto,"Paper",areaInvestigacion,doi);
 								listaTextos.add(p);
-								
+								modTxtPaper(anoTexto,codigo,autorTexto,nombreTexto,"Paper",areaInvestigacion,doi);
 								String mensaje= "Paper Agregado Correctamente";
 			                	JOptionPane.showMessageDialog(null, mensaje);
 			                	
@@ -792,6 +793,24 @@ public   class SistemaImpls implements Sistema{
 									System.out.println(t);
 								}
 								
+							}
+
+							private void modTxtPaper(int anoTexto, int codigo, String autorTexto, String nombreTexto,
+									String string, String areaInvestigacion, String doi) {
+								String nombreArchivo = "textos.txt"; // Nombre del archivo a modificar
+
+						        // La línea que quieres agregar al final del archivo
+						        String nuevaLinea = anoTexto+","+codigo+","+autorTexto+","+nombreTexto+","+string+","+areaInvestigacion+","+doi;
+
+						        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo, true))) {
+						            // Escribe la nueva línea al final del archivo
+						        	
+						            writer.write("\n"+nuevaLinea);
+						            writer.flush(); // Limpia el buffer y escribe al archivo
+						            System.out.println("Línea agregada al archivo.");
+						        } catch (IOException e) {
+						            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+						        }	
 							}
 				        	
 				        });
@@ -836,7 +855,7 @@ public   class SistemaImpls implements Sistema{
 								
 								Apunte a = new Apunte(anoTexto,codigo,autorTexto,nombreTexto,"Apunte",asignatura,carrera);
 								listaTextos.add(a);
-								
+								modTxtApunte(anoTexto,codigo,autorTexto,nombreTexto,"Apunte",asignatura,carrera);
 								String mensaje= "Apunte Agregado Correctamente";
 			                	JOptionPane.showMessageDialog(null, mensaje);
 			                	
@@ -847,6 +866,24 @@ public   class SistemaImpls implements Sistema{
 								for (Texto t: listaTextos) {
 									System.out.println(t);
 								}
+							}
+
+							private void modTxtApunte(int anoTexto, int codigo, String autorTexto, String nombreTexto,
+									String string, String asignatura, String carrera) {
+								String nombreArchivo = "textos.txt"; // Nombre del archivo a modificar
+
+						        // La línea que quieres agregar al final del archivo
+						        String nuevaLinea = anoTexto+","+codigo+","+autorTexto+","+nombreTexto+","+string+","+asignatura+","+carrera;
+
+						        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo, true))) {
+						            // Escribe la nueva línea al final del archivo
+						        	
+						            writer.write("\n"+nuevaLinea);
+						            writer.flush(); // Limpia el buffer y escribe al archivo
+						            System.out.println("Línea agregada al archivo.");
+						        } catch (IOException e) {
+						            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+						        }	
 							}
 				        	
 				        });
@@ -901,7 +938,7 @@ public   class SistemaImpls implements Sistema{
 								Comic c = new Comic(anoTexto,codigo,autorTexto,nombreTexto,"Comic",compania,genero,numeroSerie);
 								listaTextos.add(c);
 								//se modifica el txt
-								
+								modTxtComic(anoTexto,codigo,autorTexto,nombreTexto,"Comic",compania,genero,numeroSerie);
 								String mensaje= "Comic Agregado Correctamente";
 			                	JOptionPane.showMessageDialog(null, mensaje);
 			                	
@@ -912,6 +949,24 @@ public   class SistemaImpls implements Sistema{
 								for (Texto t: listaTextos) {
 									System.out.println(t);
 								}
+							}
+
+							private void modTxtComic(int anoTexto, int codigo, String autorTexto, String nombreTexto,
+									String string, String compania, String genero, String numeroSerie) {
+								String nombreArchivo = "textos.txt"; // Nombre del archivo a modificar
+
+						        // La línea que quieres agregar al final del archivo
+						        String nuevaLinea = anoTexto+","+codigo+","+autorTexto+","+nombreTexto+","+string+","+compania+","+genero+","+numeroSerie;
+
+						        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo, true))) {
+						            // Escribe la nueva línea al final del archivo
+						        	
+						            writer.write("\n"+nuevaLinea);
+						            writer.flush(); // Limpia el buffer y escribe al archivo
+						            System.out.println("Línea agregada al archivo.");
+						        } catch (IOException e) {
+						            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+						        }	
 							}
 				        	
 				        });
@@ -973,11 +1028,30 @@ public   class SistemaImpls implements Sistema{
 									SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
 									//se modifica el txt
 									//se repite lo mismo con todo lo demas
-									
+									modTxtLibro(anoTexto,codigo,autorTexto,nombreTexto,"Libro",editorial,generoLiterario,edicion);
 									for (Texto t: listaTextos) {
 										System.out.println(t);
 									}
 									
+								}
+
+								private void modTxtLibro(int anoTexto, int codigo, String autorTexto,
+										String nombreTexto, String string, String editorial, String generoLiterario,
+										String edicion) {
+									String nombreArchivo = "textos.txt"; // Nombre del archivo a modificar
+
+							        // La línea que quieres agregar al final del archivo
+							        String nuevaLinea = anoTexto+","+codigo+","+autorTexto+","+nombreTexto+","+string+","+editorial+","+generoLiterario+","+edicion;
+
+							        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo, true))) {
+							            // Escribe la nueva línea al final del archivo
+							        	
+							            writer.write("\n"+nuevaLinea);
+							            writer.flush(); // Limpia el buffer y escribe al archivo
+							            System.out.println("Línea agregada al archivo.");
+							        } catch (IOException e) {
+							            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+							        }	
 								}
 					        	
 					        });
@@ -1167,6 +1241,7 @@ public   class SistemaImpls implements Sistema{
 						if(buscarCodigoTexto(codigoTexto) && buscarRutExiste(rutTexto)) {
 							Reserva r = new Reserva(codigo,rutTexto,Integer.parseInt(codigoTexto),fechaRetiro,fechaEntrega);
 							listaReservas.add(r);
+							modTxtReservas(codigo,rutTexto,Integer.parseInt(codigoTexto),fechaRetiro,fechaEntrega);
 							//se agrega al txt
 							String mensaje= "Reserva Agregada Correctamente";
 		                	JOptionPane.showMessageDialog(null, mensaje);
@@ -1187,6 +1262,24 @@ public   class SistemaImpls implements Sistema{
 
 						}
 						
+					}
+
+					private void modTxtReservas(int codigo, String rutTexto, int parseInt, String fechaRetiro,
+							String fechaEntrega) {
+						String nombreArchivo = "reservas.txt"; // Nombre del archivo a modificar
+
+				        // La línea que quieres agregar al final del archivo
+				        String nuevaLinea = codigo+","+rutTexto+","+parseInt+","+fechaRetiro+","+fechaEntrega;
+
+				        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo, true))) {
+				            // Escribe la nueva línea al final del archivo
+				        	
+				            writer.write("\n"+nuevaLinea);
+				            writer.flush(); // Limpia el buffer y escribe al archivo
+				            System.out.println("Línea agregada al archivo.");
+				        } catch (IOException e) {
+				            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+				        }	
 					}
 
 					private boolean buscarRutExiste(String rutTexto) {
@@ -1339,6 +1432,8 @@ public   class SistemaImpls implements Sistema{
 										int contDevoluciones = contDevoluciones();
 										Devolucion d = new Devolucion(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pagado");
 										listaDevoluciones.add(d);
+						        		modTxtDevoluciones(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pagado");
+
 										eliminarLibroListaPersonal(rutTexto,codigo);
 										frameListaTextos.dispose();
 										SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
@@ -1346,7 +1441,6 @@ public   class SistemaImpls implements Sistema{
 										//se modifica el txt
 										String mensaje= "Libro Devuelto Correctamente";
 						        		JOptionPane.showMessageDialog(null, mensaje);
-						        		
 						        		
 									}
 									else {
@@ -1359,6 +1453,7 @@ public   class SistemaImpls implements Sistema{
 						        		
 										int contDevoluciones = contDevoluciones();
 										Devolucion d = new Devolucion(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pendiente");
+										modTxtDevoluciones(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pendiente");
 										listaDevoluciones.add(d);
 										eliminarLibroListaPersonal(rutTexto,codigo);
 										frameListaTextos.dispose();
@@ -1374,6 +1469,24 @@ public   class SistemaImpls implements Sistema{
 
 									}
 								}
+							}
+
+							private void modTxtDevoluciones(int contDevoluciones, int codigoReserva,
+									String devolucionOriginal, String fecha, String string) {
+								String nombreArchivo = "devoluciones.txt"; // Nombre del archivo a modificar
+
+						        // La línea que quieres agregar al final del archivo
+						        String nuevaLinea = contDevoluciones+","+codigoReserva+","+devolucionOriginal+","+fecha+","+string;
+
+						        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo, true))) {
+						            // Escribe la nueva línea al final del archivo
+						        	
+						            writer.write("\n"+nuevaLinea);
+						            writer.flush(); // Limpia el buffer y escribe al archivo
+						            System.out.println("Línea agregada al archivo.");
+						        } catch (IOException e) {
+						            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+						        }	
 							}
 
 							private void eliminarLibroListaPersonal(String rutTexto, String codigo) {
@@ -2332,10 +2445,31 @@ public   class SistemaImpls implements Sistema{
 										int contReservas = contadorReservas();
 										Reserva r = new Reserva(contReservas,rut,texto.getCodigo(),fechaPedido,fechaEntrega);
 										listaReservas.add(r);
+										modTxtReservas(contReservas,rut,texto.getCodigo(),fechaPedido,fechaEntrega);
 									}
 								}
 							}
 						}
+					}
+
+
+
+					private void modTxtReservas(int contReservas, String rut, int codigo, String fechaPedido,
+							String fechaEntrega) {
+						String nombreArchivo = "reservas.txt"; // Nombre del archivo a modificar
+
+				        // La línea que quieres agregar al final del archivo
+				        String nuevaLinea = contReservas+","+rut+","+codigo+","+fechaPedido+","+fechaEntrega;
+
+				        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo, true))) {
+				            // Escribe la nueva línea al final del archivo
+				        	
+				            writer.write("\n"+nuevaLinea);
+				            writer.flush(); // Limpia el buffer y escribe al archivo
+				            System.out.println("Línea agregada al archivo.");
+				        } catch (IOException e) {
+				            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+				        }
 					}
 
 
@@ -2529,6 +2663,7 @@ public   class SistemaImpls implements Sistema{
 								//se agrega al txt de devoluciones con un "pagado"
 								int contDevoluciones = contDevoluciones();
 								Devolucion d = new Devolucion(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pagado");
+								modTxtDevolucion(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pagado");
 								eliminarLibroListaPersonal(rut,codigo);
 								frameListaTextos.dispose();
 								SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
@@ -2553,6 +2688,24 @@ public   class SistemaImpls implements Sistema{
 							}
 						}
 						
+					}
+
+					private void modTxtDevolucion(int contDevoluciones, int codigoReserva, String devolucionOriginal,
+							String fecha, String string) {
+						String nombreArchivo = "devoluciones.txt"; // Nombre del archivo a modificar
+
+				        // La línea que quieres agregar al final del archivo
+				        String nuevaLinea = contDevoluciones+","+codigoReserva+","+devolucionOriginal+","+fecha+","+string;
+
+				        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo, true))) {
+				            // Escribe la nueva línea al final del archivo
+				        	
+				            writer.write("\n"+nuevaLinea);
+				            writer.flush(); // Limpia el buffer y escribe al archivo
+				            System.out.println("Línea agregada al archivo.");
+				        } catch (IOException e) {
+				            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+				        }	
 					}
 
 					private void eliminarLibroListaPersonal(String rut, String codigo) {
@@ -2855,8 +3008,9 @@ public   class SistemaImpls implements Sistema{
 			                			Devolucion de = listaDevoluciones.get(d);
 			                			listaDevoluciones.remove(d);
 			                			Devolucion devo = new Devolucion(de.getCodigoDevolucion(),de.getCodigoReserva(),de.getFechaDevolucionOriginal(),de.getFechaDevolucionReal(),"pagado");
-			                			listaDevoluciones.add(devo);
 			                			
+			                			listaDevoluciones.add(devo);
+			                			modTxtDevoluciones(listaDevoluciones);
 			                		}
 			                		contError++;
 			                		return;
@@ -2875,6 +3029,44 @@ public   class SistemaImpls implements Sistema{
 
 					}
 
+					private void modTxtDevoluciones(ArrayList<Devolucion> listaDevoluciones) {
+						 String nombreArchivoOriginal = "devoluciones.txt"; // Nombre del archivo original
+					        String nombreArchivoNuevo = "archivo_nuevo.txt"; // Nombre del archivo nuevo
+
+
+					        // Escribir la lista en el nuevo archivo
+					        escribirArchivo(nombreArchivoNuevo, listaDevoluciones);
+
+					        // Eliminar el archivo original
+					        File archivoOriginal = new File(nombreArchivoOriginal);
+					        if (archivoOriginal.exists()) {
+					            archivoOriginal.delete(); // Borra el archivo original
+					        }
+
+					        // Renombrar el nuevo archivo con el nombre del original
+					        File archivoNuevo = new File(nombreArchivoNuevo);
+					        if (archivoNuevo.exists()) {
+					            archivoNuevo.renameTo(new File(nombreArchivoOriginal)); // Cambia el nombre del nuevo archivo
+					        }
+					    }
+
+					
+		        private static void escribirArchivo(String nombreArchivo, ArrayList<Devolucion> listaDevoluciones) {
+		        	try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo))) {
+		        		for (Devolucion linea : listaDevoluciones) {
+		        			int codigo = linea.getCodigoDevolucion();
+		        			int codigoReserva = linea.getCodigoReserva();
+		        			String fechaOriginal = linea.getFechaDevolucionOriginal();
+		        			String fechaReal = linea.getFechaDevolucionReal();
+		        			String estado = linea.getEstadoDeuda();
+		        			writer.write(codigo+","+codigoReserva+","+fechaOriginal+","+fechaReal+","+estado);
+		        			writer.newLine();
+		        		}
+		        	} catch (IOException e) {
+		        		e.printStackTrace();
+		        	}
+		        }
+
 					private void modificarTxtDevoluciones(ArrayList<Devolucion> pendientesPorPersona) {
 						for (Devolucion devolucion : pendientesPorPersona) {
 							int d = listaDevoluciones.indexOf(devolucion);
@@ -2883,6 +3075,8 @@ public   class SistemaImpls implements Sistema{
                 			Devolucion devo = new Devolucion(de.getCodigoDevolucion(),de.getCodigoReserva(),de.getFechaDevolucionOriginal(),de.getFechaDevolucionReal(),"pagado");
                 			listaDevoluciones.add(devo);
 						}
+            			modTxtDevoluciones(listaDevoluciones);
+
 					}
 
 					private int pagoTotalUnoSolo(String codigoDeuda) {
