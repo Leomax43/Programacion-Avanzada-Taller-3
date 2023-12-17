@@ -21,6 +21,7 @@ public   class SistemaImpls implements Sistema{
 	private JFrame frameListaReservasDevueltas;
 	private JFrame frameTodosLosLibrosBiblioteca;
 	private JFrame frameEstadisticas;
+	private JFrame frameUsuariosDisponibles;
 
 
 	//esto es para el pago
@@ -527,7 +528,8 @@ public   class SistemaImpls implements Sistema{
 					SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
 					String mensaje = "Usuario Correctamente agregado";
             		JOptionPane.showMessageDialog(null, mensaje);
-                	
+                	//se modifica el txt
+            		modificartxtPersonas(nombre,rut,password,"Usuario");
                 	Sistema s = SistemaImpls.getInstancia();
             		s.Interfaz();
             		
@@ -544,6 +546,23 @@ public   class SistemaImpls implements Sistema{
                 
                 
             }
+
+			private void modificartxtPersonas(String nombre, String rut, String password, String string) {
+				 	String nombreArchivo = "personas.txt"; // Nombre del archivo a modificar
+
+			        // La línea que quieres agregar al final del archivo
+			        String nuevaLinea = nombre+","+rut+","+password+","+string;
+
+			        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo, true))) {
+			            // Escribe la nueva línea al final del archivo
+			        	
+			            writer.write("\n"+nuevaLinea);
+			            writer.flush(); // Limpia el buffer y escribe al archivo
+			            System.out.println("Línea agregada al archivo.");
+			        } catch (IOException e) {
+			            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+			        }				
+			}
         });
 	}
 
@@ -981,10 +1000,52 @@ public   class SistemaImpls implements Sistema{
             	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             	frame.setLocationRelativeTo(null);
             	mostrarLibrosDisponibles();
+            	mostrarUsuariosDisponibles();
+            	
             	JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 50));
             	frame.add(panel);
             	placeComponentsReservar(panel,fecha,rut);
             	frame.setVisible(true);
+			}
+
+			private void mostrarUsuariosDisponibles() {
+				ArrayList<Persona> listaPersonasDisponibles = new ArrayList<>();
+				
+				for (Persona p: listaPersonas) {
+					if (p instanceof Usuario  && p.getTipoPersona().equals("Usuario")) {
+						int size = ((Usuario) p).getListaLibrosReservados().size();
+						if(size<=2) {
+							listaPersonasDisponibles.add(p);
+						}
+					}
+
+				}
+				
+				
+				// Crear una nueva ventana (JFrame)
+
+				frameUsuariosDisponibles = new JFrame("Lista De Personas Disponibles");
+				frameUsuariosDisponibles.setSize(800, 300);
+				frameUsuariosDisponibles.setLocationRelativeTo(null);
+				frameUsuariosDisponibles.setLocation(800, 0); // A la derecha
+		        // Crear un JTextArea para mostrar la lista
+		        JTextArea textArea = new JTextArea();
+		        textArea.setEditable(false); // Hacer el área de texto no editable
+
+		        // Agregar los elementos del ArrayList al JTextArea
+		        
+		        for (Persona per : listaPersonasDisponibles) {
+		            textArea.append(per + "\n"); // Agregar cada elemento seguido de un salto de línea
+		        }
+		        
+		        // Agregar el JTextArea a un JScrollPane para permitir el desplazamiento si hay muchos elementos
+		        JScrollPane scrollPane = new JScrollPane(textArea);
+
+		        // Agregar el JScrollPane al JFrame
+		        frameUsuariosDisponibles.add(scrollPane, BorderLayout.CENTER);
+
+		        // Mostrar la ventana
+		        frameUsuariosDisponibles.setVisible(true);
 			}
 
 			private ArrayList<Texto> mostrarLibrosDisponibles() {
@@ -1025,6 +1086,7 @@ public   class SistemaImpls implements Sistema{
 		        frameListaTextos = new JFrame("Lista De textos Disponibles");
 		        frameListaTextos.setSize(800, 300);
 		        frameListaTextos.setLocationRelativeTo(null);
+		        frameListaTextos.setLocation(0, 0);
 
 		        // Crear un JTextArea para mostrar la lista
 		        JTextArea textArea = new JTextArea();
@@ -1113,7 +1175,7 @@ public   class SistemaImpls implements Sistema{
 		                	
 							SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
 					        frameListaTextos.setVisible(false);
-					        
+					        frameUsuariosDisponibles.setVisible(false);
 							
 						}
 						else {
@@ -1121,6 +1183,7 @@ public   class SistemaImpls implements Sistema{
 		                	JOptionPane.showMessageDialog(null, mensaje);
 							SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
 					        frameListaTextos.setVisible(false);
+					        frameUsuariosDisponibles.setVisible(false);
 
 						}
 						
@@ -1200,7 +1263,7 @@ public   class SistemaImpls implements Sistema{
 						String rutTexto = rutText.getText();
 						if (personaExiste(rutTexto)) {
 							Usuario u = buscarPersonaRut(rutTexto);
-							ArrayList<Texto> listaReservados=u.getListaLibrosReservados();
+							ArrayList<Texto> listaReservados= u.getListaLibrosReservados();
 							boolean VoF = mostrarLibrosReservados(listaReservados);
 							if (VoF) {
 								SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
@@ -1275,11 +1338,15 @@ public   class SistemaImpls implements Sistema{
 										//se agrega al txt de devoluciones con un "pagado"
 										int contDevoluciones = contDevoluciones();
 										Devolucion d = new Devolucion(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pagado");
+										listaDevoluciones.add(d);
 										eliminarLibroListaPersonal(rutTexto,codigo);
 										frameListaTextos.dispose();
 										SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
+										//ademas se modifica el devoluciones
+										//se modifica el txt
 										String mensaje= "Libro Devuelto Correctamente";
 						        		JOptionPane.showMessageDialog(null, mensaje);
+						        		
 						        		
 									}
 									else {
@@ -1292,10 +1359,14 @@ public   class SistemaImpls implements Sistema{
 						        		
 										int contDevoluciones = contDevoluciones();
 										Devolucion d = new Devolucion(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pendiente");
+										listaDevoluciones.add(d);
 										eliminarLibroListaPersonal(rutTexto,codigo);
 										frameListaTextos.dispose();
 										SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
-						        		
+										//ademas se modifica el devoluciones
+										//se modifica el txt
+										
+
 						        		/* de todos modos se usaria algo como esto
 										int contDevoluciones = contDevoluciones();
 										Devolucion d = new Devolucion(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pendiente");
