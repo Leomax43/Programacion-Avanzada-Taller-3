@@ -2240,6 +2240,9 @@ public   class SistemaImpls implements Sistema{
             	
             	}
             	else {
+            		String mensaje= "Error ya posee 3 libros";
+                	JOptionPane.showMessageDialog(null, mensaje);
+
             		//imprimir en la interfaz 
             		//usted no puede pedir mas libros
             	}
@@ -2250,7 +2253,7 @@ public   class SistemaImpls implements Sistema{
 
 			private boolean revisarSiUsuarioPuedeReservar(String rut) {
 				for (Persona p : listaPersonas) {
-					if(p.getRut().equals(rut)) {
+					if (p instanceof Usuario && p.getRut().equals(rut) && p.getTipoPersona().equals("Usuario")) {
 						ArrayList<Texto> t = ((Usuario) p).getListaLibrosReservados();
 						int cont=0;
 						for (Texto texto : t) {
@@ -2443,9 +2446,28 @@ public   class SistemaImpls implements Sistema{
 										((Usuario) p).agregarLibro(texto);
 										//se agrega la nueva reserva a la lista reservas
 										int contReservas = contadorReservas();
-										Reserva r = new Reserva(contReservas,rut,texto.getCodigo(),fechaPedido,fechaEntrega);
+										String[] partesPedido = fechaPedido.split("/");
+										
+										String anoPedido = partesPedido[0];
+										String mesPedido = partesPedido[1];
+										String diaPedido = partesPedido[2];
+
+										String[] partesEntrega = fechaEntrega.split("/");
+
+										String anoEntrega = partesEntrega[0];
+										String mesEntrega= partesEntrega[1];
+										String diaEntrega= partesEntrega[2];
+										
+										String fechaPedidoNueva ="";
+										String fechaEntregaNueva="";
+										
+										fechaPedidoNueva+=diaPedido+"-"+mesPedido+"-"+anoPedido;
+										fechaEntregaNueva+=diaEntrega+"-"+mesEntrega+"-"+anoEntrega;
+										
+										
+										Reserva r = new Reserva(contReservas,rut,texto.getCodigo(),fechaPedidoNueva,fechaEntregaNueva);
 										listaReservas.add(r);
-										modTxtReservas(contReservas,rut,texto.getCodigo(),fechaPedido,fechaEntrega);
+										modTxtReservas(contReservas,rut,texto.getCodigo(),fechaPedidoNueva,fechaEntregaNueva);
 									}
 								}
 							}
@@ -2479,7 +2501,7 @@ public   class SistemaImpls implements Sistema{
 						for (Reserva r : listaReservas) {
 							cont++;
 						}
-						cont+=100000;
+						cont+=100001;
 						return cont;
 					}
 
@@ -2528,7 +2550,6 @@ public   class SistemaImpls implements Sistema{
 				//cont para revisar si alguna vez fue pedido el libro
 				int contPeticion=0;
 				
-				
 				for (Texto texto : listaTextos) {
 					for (Reserva r: listaReservas) {
 						
@@ -2540,17 +2561,21 @@ public   class SistemaImpls implements Sistema{
 							for (Devolucion d: listaDevoluciones) {
 								if (d.getCodigoReserva()==r.getCodigoReserva()) {
 									//se pidio el libro y se devolvio
-									listaLibrosDisponibles.add(texto);
+									//pero hay que revisar si fue la ultima vez que se pidio
+									contPeticion--;
 								}
 								
 							}
 							
 						}
 					}
+					
+					
 					if(contPeticion==0) {
-						//si entra aca es pq nunca lo reservaron antes
 						listaLibrosDisponibles.add(texto);
+
 					}
+					
 					contPeticion=0;
 				}
 				
