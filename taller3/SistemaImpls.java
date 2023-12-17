@@ -92,7 +92,6 @@ public   class SistemaImpls implements Sistema{
 				
 				
 				case("Trabajador"):
-					//System.out.println("aol");
 					Trabajador t = new Trabajador(partesPersona[0],partesPersona[1],partesPersona[2],tipoPersona);
 					listaPersonas.add(t);
 					
@@ -335,7 +334,7 @@ public   class SistemaImpls implements Sistema{
                 
                 //solo se revisa la fecha ya que el nombre y rut se revisan en la lectura de la lista
                 else if (revisarDatosCorrectos==false && !fecha.isBlank()) {
-                	
+                	System.out.println("olaaaaaa");
                 	JFrame frameRegistro = new JFrame("Ingresar Datos");
                     frameRegistro.setSize(350, 200);
                     frameRegistro.setLocationRelativeTo(null);
@@ -1307,7 +1306,7 @@ public   class SistemaImpls implements Sistema{
 						for (Reserva r : listaReservas) {
 							cont++;
 						}
-						cont+=100000;
+						cont+=100001;
 						return cont;
 					}
 		        	
@@ -2475,14 +2474,14 @@ public   class SistemaImpls implements Sistema{
 					}
 
 
-
+					
 					private void modTxtReservas(int contReservas, String rut, int codigo, String fechaPedido,
 							String fechaEntrega) {
 						String nombreArchivo = "reservas.txt"; // Nombre del archivo a modificar
 
 				        // La línea que quieres agregar al final del archivo
 				        String nuevaLinea = contReservas+","+rut+","+codigo+","+fechaPedido+","+fechaEntrega;
-
+				        
 				        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo, true))) {
 				            // Escribe la nueva línea al final del archivo
 				        	
@@ -2494,8 +2493,8 @@ public   class SistemaImpls implements Sistema{
 				        }
 					}
 
-
-
+					
+					
 					private int contadorReservas() {
 						int cont=0;
 						for (Reserva r : listaReservas) {
@@ -2504,7 +2503,7 @@ public   class SistemaImpls implements Sistema{
 						cont+=100001;
 						return cont;
 					}
-
+					
 
 
 					private boolean revisarDatosReserva(String codigoReserva, String fechaPedido, String fechaEntrega, ArrayList<Texto> listaLibrosDisponibles) {
@@ -2687,8 +2686,21 @@ public   class SistemaImpls implements Sistema{
 								//por ende se elimina de manera normal
 								//se agrega al txt de devoluciones con un "pagado"
 								int contDevoluciones = contDevoluciones();
-								Devolucion d = new Devolucion(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pagado");
-								modTxtDevolucion(contDevoluciones,codigoReserva,devolucionOriginal,fecha,"pagado");
+								
+								
+								String fechaActualahoraSi="";
+								String[] partesFechaActual = fecha.split("/");
+								int anioPedido = Integer.parseInt(partesFechaActual[0]);
+					            int mesPedido = Integer.parseInt(partesFechaActual[1]);
+					            int diaPedido = Integer.parseInt(partesFechaActual[2]);
+								
+					            fechaActualahoraSi+=diaPedido+"-"+mesPedido+"-"+anioPedido;
+					            
+								
+								Devolucion d = new Devolucion(contDevoluciones,codigoReserva,devolucionOriginal,fechaActualahoraSi,"pagado");
+								listaDevoluciones.add(d);
+								
+								modTxtDevolucion(contDevoluciones,codigoReserva,devolucionOriginal,fechaActualahoraSi,"pagado");
 								eliminarLibroListaPersonal(rut,codigo);
 								frameListaTextos.dispose();
 								SwingUtilities.getWindowAncestor((Component) e.getSource()).dispose();
@@ -2753,7 +2765,7 @@ public   class SistemaImpls implements Sistema{
 						for (Devolucion d: listaDevoluciones) {
 							cont++;
 						}
-						cont+=1000000;
+						cont+=100000;
 						return cont;
 					}
 
